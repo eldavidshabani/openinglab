@@ -75,11 +75,29 @@ h2{font-size:17px;margin:6px 0}
 .optional-info summary{cursor:pointer;font-size:12px;color:var(--lime);font-weight:700}
 .optional-info .eyebrow{margin-top:10px}
 @media(max-width:760px){.chat-log{height:156px}}
+
+/* v5.1 — vertically animated engine evaluation alongside (not on top of) board */
+.board-with-eval{display:flex;align-items:stretch;gap:7px;width:100%;max-width:100%;margin:0 auto}
+.board-with-eval .board{flex:1 1 auto;width:0;min-width:0;max-width:none;margin:0}
+.eval-column{display:flex;align-items:stretch;width:26px;flex:0 0 26px}
+.eval-meter{position:relative;flex:1;border:1px solid #5e716e;border-radius:6px;background:#1b262c;overflow:hidden;box-shadow:inset 0 0 4px #0006}
+.eval-white{position:absolute;bottom:0;left:0;right:0;height:50%;background:#e4e8d8;transition:height 1000ms cubic-bezier(.22,.65,.15,1);will-change:height}
+.eval-divider{position:absolute;left:0;right:0;top:50%;height:1px;background:#7d9f8a66;pointer-events:none}
+.eval-top-label,.eval-bottom-label{position:absolute;z-index:2;left:0;right:0;text-align:center;font-weight:900;font-size:10px;letter-spacing:0;pointer-events:none}
+.eval-top-label{top:6px;color:#eef0dc}.eval-bottom-label{bottom:6px;color:#2a4035}
+.eval-readout{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 4px 2px;min-height:35px;flex-wrap:wrap}
+.eval-readout>div{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.eval-caption{font-size:9px;font-weight:800;letter-spacing:.06em;color:#9fbbb0}
+#evalNumber{font-weight:900;font-size:17px;line-height:1.1;font-variant-numeric:tabular-nums;color:#e9f0de}
+#evalFavor{font-size:11px;color:#c7e88b}
+.eval-hint{letter-spacing:0;text-align:right;font-weight:500}
+@media(max-width:760px){.eval-column{width:22px;flex-basis:22px}.board-with-eval{gap:5px}.eval-caption{font-size:9px}.eval-hint{display:none}}
+@media(prefers-reduced-motion:reduce){.eval-white{transition:none}}
 </style>
 </head>
 <body>
 <div class="container">
-<header><a href="./index.html" class="brand"><span class="iconmark">♞</span><span>Opening<b>Lab</b></span><span class="by">by Twelvy</span></a><span class="chip">v5.0 · coaching beta</span></header>
+<header><a href="./index.html" class="brand"><span class="iconmark">♞</span><span>Opening<b>Lab</b></span><span class="by">by Twelvy</span></a><span class="chip">v5.1 · live eval bar</span></header>
 <div class="heading"><div><div class="eyebrow">NEW: PLAY AGAINST STOCKFISH</div><h1>Play, ask, understand.</h1><p>Real Black replies · move reviews · conversational chess coach · free</p></div><a href="./index.html">← Your 7 lessons</a></div>
 <div class="grid">
 <section class="card" aria-label="Playable chessboard">
@@ -89,7 +107,21 @@ h2{font-size:17px;margin:6px 0}
 <button id="newGame" class="primary">↻ New game</button>
 </div>
 <div id="engineStatus" class="status" data-state="loading" role="status">Loading chess rules and Stockfish…</div>
-<div id="board" class="board" role="grid" aria-label="Chess board. Select a White piece and a legal target square."></div>
+<div class="board-with-eval">
+  <div class="eval-column" title="Stockfish estimate, from White's perspective">
+    <div id="evaluationMeter" class="eval-meter" role="meter" aria-label="Position evaluation: White's winning chances estimate" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="Engine evaluation not yet available">
+      <div id="evaluationWhite" class="eval-white" style="height:50%"></div>
+      <div class="eval-divider" aria-hidden="true"></div>
+      <div class="eval-top-label">B</div>
+      <div class="eval-bottom-label">W</div>
+    </div>
+  </div>
+  <div id="board" class="board" role="grid" aria-label="Chess board. Select a White piece and a legal target square."></div>
+</div>
+<div class="eval-readout" role="status" aria-live="polite">
+ <div><span class="eval-caption">STOCKFISH EVALUATION</span> <strong id="evalNumber">—</strong> <span id="evalFavor">Waiting for engine</span></div>
+ <span class="eval-caption eval-hint" id="evalStage">White below · Black above</span>
+</div>
 <div class="board-buttons">
 <button id="hint" class="outline" disabled>💡 Engine hint</button>
 <button id="undo" class="outline" disabled>↶ Undo turn</button>
@@ -166,6 +198,33 @@ function sanFromUCI(uci){
  const match=game.moves({verbose:true}).find(x=>x.from===mv.from&&x.to===mv.to&&(!x.promotion||x.promotion===(mv.promotion||'q')));
  return match?.san||null;
 }
+
+/* Stockfish scores come from UCI "score cp/mate", normalized to White's point of view.
+   Values are position estimates, not true win probabilities. */
+let evalScore=null,evalProvisional=false;
+function evalShare(score){
+ if(!score)return 50;
+ if(score.type==='mate')return score.value>=0?96:4;
+ const cp=Math.max(-2500,Math.min(2500,score.value));
+ return Math.max(4,Math.min(96,50+46*Math.tanh(cp/400)));
+}
+function updateEval(score,stage='Latest engine estimate',provisional=false){
+ evalScore=score?{type:score.type,value:score.value}:null;
+ evalProvisional=provisional;
+ const share=evalShare(evalScore),w=$('evaluationWhite'),meter=$('evaluationMeter');
+ w.style.height=share.toFixed(1)+'%';
+ meter.setAttribute('aria-valuenow',share.toFixed(1));
+ meter.setAttribute('aria-valuetext',evalScore?'White perspective: '+displayScore(evalScore):'Engine evaluation pending');
+ $('evalNumber').textContent=evalScore?displayScore(evalScore):'—';
+ let favor='Waiting for engine';
+ if(evalScore){
+  favor=evalScore.type==='mate'?(evalScore.value>=0?'White has a forced mate':'Black has a forced mate'):
+   evalScore.value>45?'White better':evalScore.value< -45?'Black better':'Roughly equal';
+ }
+ $('evalFavor').textContent=favor;
+ $('evalStage').textContent=stage+(provisional?' · being refined':'');
+}
+
 function reviewWhiteMove(m,postScore){
  const introductory=explain(m);
  let heading='♙ '+m.san+' — engine review';
@@ -386,7 +445,7 @@ function render(){
 function endGame(){
  if(!game.isGameOver())return false;
  let msg=game.isCheckmate()?(game.turn()==='w'?'Black wins by checkmate.':'You win by checkmate!'):'Draw: '+(game.isStalemate()?'stalemate.':game.isThreefoldRepetition()?'threefold repetition.':game.isInsufficientMaterial()?'insufficient material.':'game drawn.');
- $('gameResult').textContent=msg;status(msg);$('hint').disabled=true;render();return true;
+ $('gameResult').textContent=msg;status(msg);$('hint').disabled=true;const finalScore=game.isCheckmate()?{type:'mate',value:game.turn()==='w'?-1:1}:{type:'cp',value:0};updateEval(finalScore,'Game over');render();return true;
 }
 function tap(sq){
  if(!engineReady||pending||game.turn()!=='w'||game.isGameOver())return;
@@ -441,6 +500,7 @@ function startEngine(){
     if(!action||candidate==='(none)'||candidate.length<4||game.fen()!==action.fen){continue;}
     if(action.type==='baseline'){
       baseline=fromWhite(action.score,'w');
+      if(baseline)updateEval(baseline,'After Black’s move');
       baselineBest=sanFromUCI(candidate);baselinePV=action.pv||[];
       status('Your turn · Stockfish coaching ready!');$('hint').disabled=false;render();
       continue;
@@ -453,6 +513,7 @@ function startEngine(){
     }
     if(action.type==='black'){
       const post=fromWhite(action.score,'b');
+      if(post)updateEval(post,'After your move');
       const review=lastWhiteMove?reviewWhiteMove(lastWhiteMove,post):null;
       if(review)feedback('white',review.heading,review.explanation);
       const p=parseUCI(candidate);let m=null;
@@ -490,7 +551,7 @@ function askEngine(type){
  send('go movetime '+(type==='hint'?700:type==='baseline'?350:conf.ms));
 }
 function newGame(){
- game=new Chess();chosen=null;possible=[];whiteNote='';blackNote='';baseline=null;baselineBest=null;baselinePV=[];lastWhiteMove=null;coachHistory=[];$('chatLog').innerHTML='';showChat('assistant','New game. Ask me what Black is threatening, what Stockfish prefers, or why a move was a mistake.');
+ game=new Chess();chosen=null;possible=[];whiteNote='';blackNote='';updateEval(null,'New game');baseline=null;baselineBest=null;baselinePV=[];lastWhiteMove=null;coachHistory=[];$('chatLog').innerHTML='';showChat('assistant','New game. Ask me what Black is threatening, what Stockfish prefers, or why a move was a mistake.');
  feedback('white','♙ Your move','Try d4 for the London. Build central space and develop your bishop before e3.');
  waitingBlack('♟ Black’s move','Waiting for you to play.');
  $('gameResult').textContent='Free browser chess engine. First load needs internet.';
@@ -503,7 +564,7 @@ $('hint').addEventListener('click',()=>{if(engineReady&&game.turn()==='w'&&!pend
 $('undo').addEventListener('click',()=>{
  if(!engineReady||pending||game.turn()!=='w')return;
  const h=game.history();if(!h.length)return;
- game.undo();if(game.history().length&&game.turn()==='b')game.undo();baseline=null;baselineBest=null;baselinePV=[];lastWhiteMove=null;
+ game.undo();if(game.history().length&&game.turn()==='b')game.undo();updateEval(null,'Position changed · checking');baseline=null;baselineBest=null;baselinePV=[];lastWhiteMove=null;
  chosen=null;possible=[];feedback('white','↶ Turn undone','Choose a different move. Watch the center and king safety.');
  waitingBlack('♟ Waiting','Black will respond after your move.');$('planBox').innerHTML='<strong>Try again:</strong> play a developing move or ask for a Stockfish hint.';render();askEngine('baseline');
 });
