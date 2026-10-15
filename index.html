@@ -109,11 +109,16 @@
  .mobile-story-row[data-tone=waiting]{opacity:.8}
 }
 @media(prefers-reduced-motion:reduce){.story-enter{animation:none}}
+
+.engine-link{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;border:1px solid #8fb666;background:#c8ed8b;color:#193321;text-decoration:none;font-weight:900;font-size:12px;white-space:nowrap}
+.engine-link:hover{background:#e1f9b7}
+.engine-beta{font-size:8px;color:#254126;border:1px solid #7a9a66;border-radius:5px;padding:2px 4px;letter-spacing:.04em}
+@media(max-width:750px){.engine-link{font-size:10px;padding:7px}.engine-beta{display:none}}
 </style>
 </head>
 <body>
   <div class="app">
-    <header class="topbar"><div class="brand"><span class="logomark" aria-hidden="true">♞</span><span>Opening<em>Lab</em></span><span class="brand-credit">by <strong>Twelvy</strong></span><span class="release-tag">v3.2 · move feedback</span></div><div class="topright"><span class="pill"><span class="online-dot"></span>Offline-friendly · $0</span><button class="outline" id="helpButton" type="button">How it works ↗</button></div></header>
+    <header class="topbar"><div class="brand"><span class="logomark" aria-hidden="true">♞</span><span>Opening<em>Lab</em></span><span class="brand-credit">by <strong>Twelvy</strong></span><span class="release-tag">v3.3 · Stockfish beta</span></div><div class="topright"><span class="pill"><span class="online-dot"></span>Offline-friendly · $0</span><a class="engine-link" href="./play-engine.html">♟ Play Stockfish <span class="engine-beta">BETA</span></a><button class="outline" id="helpButton" type="button">How it works ↗</button></div></header>
     <main class="layout">
       <aside class="sidebar">
         <section class="card"><div class="side-head"><div class="eyebrow">Your opening repertoire</div><h1>Master the London.</h1><p>7 bite-size lessons · made for a 1400-rated player</p></div><nav aria-label="Opening lessons" class="course-list" id="courseList"></nav></section>
