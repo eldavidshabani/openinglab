@@ -56,7 +56,7 @@ h2{font-size:17px;margin:6px 0}
 </head>
 <body>
 <div class="container">
-<header><a href="./index.html" class="brand"><span class="iconmark">♞</span><span>Opening<b>Lab</b></span><span class="by">by Twelvy</span></a><span class="chip">v4 beta · real chess engine</span></header>
+<header><a href="./index.html" class="brand"><span class="iconmark">♞</span><span>Opening<b>Lab</b></span><span class="by">by Twelvy</span></a><span class="chip">v4.1 · engine reviews moves</span></header>
 <div class="heading"><div><div class="eyebrow">NEW: PLAY AGAINST STOCKFISH</div><h1>Train your London against a real opponent.</h1><p>Legal moves · dynamic Black replies · explained move-by-move · free</p></div><a href="./index.html">← Your 7 lessons</a></div>
 <div class="grid">
 <section class="card" aria-label="Playable chessboard">
@@ -78,8 +78,8 @@ h2{font-size:17px;margin:6px 0}
 <section>
 <div class="card">
 <div class="eyebrow">YOUR PERSONAL CHESS COACH</div>
-<h2>Feedback you can actually read</h2>
-<p class="info">Your explanation stays visible when Black responds. These are rule-based training tips, not a paid AI chatbot or full engine evaluation.</p>
+<h2>Stockfish reviews your decisions</h2>
+<p class="info">Each move gets a quick Stockfish evaluation against the best continuation found before you played. Estimates are shallow, not a full game review. Your move and Black's reply stay visible.</p>
 <div class="story" id="whiteFeedback" data-tone="white" aria-live="polite"><strong id="whiteTitle">♙ Your move</strong><p id="whiteText">Try 1.d4 to enter the London, then develop your bishop to f4.</p></div>
 <div class="story" id="blackFeedback" data-tone="waiting" aria-live="polite"><strong id="blackTitle">♟ Black's move</strong><p id="blackText">Waiting for your move.</p></div>
 <div class="callout" id="planBox"><strong>Opening goal:</strong> d4, Bf4, e3, Nf3 and c3 — but adapt if Black challenges the center or attacks your bishop.</div>
@@ -87,7 +87,7 @@ h2{font-size:17px;margin:6px 0}
 <div class="card">
 <div class="eyebrow">WHAT YOU ARE LEARNING</div>
 <h2>Real games, not memorized responses</h2>
-<p class="info">Black can choose moves outside the seven lessons. Stockfish calculates locally in your browser. Legal moves, checks, castling, promotion and game results are handled by chess.js.</p>
+<p class="info">Black can choose moves outside the seven lessons. Stockfish calculates locally in your browser and now reviews evaluation swings after every White move. Legal moves, checks, castling, promotion and game results are handled by chess.js.</p>
 <p class="info" id="gameResult">No paid subscription or account required. Initial engine download needs internet.</p>
 </div>
 </section>
@@ -98,12 +98,68 @@ h2{font-size:17px;margin:6px 0}
 import {Chess} from 'https://cdn.jsdelivr.net/npm/chess.js@1.4.0/+esm';
 const $=x=>document.getElementById(x);
 const pieces={wp:'♙',wn:'♘',wb:'♗',wr:'♖',wq:'♕',wk:'♔',bp:'♟',bn:'♞',bb:'♝',br:'♜',bq:'♛',bk:'♚'};
-let game=new Chess(),chosen=null,possible=[],flip=false,engine=null,engineReady=false,pending=null,requestId=0,workerURL=null,readyTimeout=null,whiteNote='',blackNote='';
+let game=new Chess(),chosen=null,possible=[],flip=false,engine=null,engineReady=false,pending=null,requestId=0,workerURL=null,readyTimeout=null,whiteNote='',blackNote='',baseline=null,baselineBest=null,lastWhiteMove=null;
 const settings={easy:{elo:1350,ms:450},club:{elo:1600,ms:850},strong:{elo:2000,ms:1500}};
 function status(message,state='ready'){$('engineStatus').textContent=message;$('engineStatus').dataset.state=state;}
 function feedback(side,title,body){$(side+'Title').textContent=title;$(side+'Text').textContent=body;const card=$(side+'Feedback');card.classList.remove('enter');void card.offsetWidth;card.classList.add('enter');card.dataset.tone=side;}
 function waitingBlack(title,body){$('blackTitle').textContent=title;$('blackText').textContent=body;$('blackFeedback').dataset.tone='waiting';}
 function parseUCI(uci){return{from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'};}
+function extractScore(s){
+ const match=s.match(/\bscore\s+(cp|mate)\s+(-?\d+)\b/);
+ if(!match)return null;
+ return {type:match[1],value:Number(match[2])};
+}
+function fromWhite(score,sideToMove){
+ if(!score)return null;
+ return {type:score.type,value:sideToMove==='w'?score.value:-score.value};
+}
+function displayScore(score){
+ if(!score)return 'not available';
+ if(score.type==='mate')return score.value>0?'White mates in '+score.value:score.value<0?'Black mates in '+Math.abs(score.value):'mate';
+ return (score.value>=0?'+':'')+(score.value/100).toFixed(1);
+}
+function sanFromUCI(uci){
+ const mv=parseUCI(uci);
+ const match=game.moves({verbose:true}).find(x=>x.from===mv.from&&x.to===mv.to&&(!x.promotion||x.promotion===(mv.promotion||'q')));
+ return match?.san||null;
+}
+function reviewWhiteMove(m,postScore){
+ const introductory=explain(m);
+ let heading='♙ '+m.san+' — engine review';
+ let explanation=introductory;
+ const before=baseline,after=postScore;
+ if(before?.type==='cp'&&after?.type==='cp'){
+   const loss=(before.value-after.value)/100;
+   let label='Solid move';
+   if(loss>=4.0)label='Major blunder';
+   else if(loss>=2.0)label='Blunder';
+   else if(loss>=1.0)label='Mistake';
+   else if(loss>=0.5)label='Inaccuracy';
+   else if(loss<=-0.6)label='Interesting improvement';
+   heading='♙ '+m.san+' — '+label;
+   explanation='Quick Stockfish estimate (White): '+displayScore(before)+' → '+displayScore(after)+'. ';
+   if(loss>=0.5){
+      explanation+='This move allowed Black a stronger reply (about '+loss.toFixed(1)+' pawns worse in this short search). ';
+      if(baselineBest&&baselineBest!==m.san)explanation+='Consider '+baselineBest+' instead. ';
+   }else{
+      explanation+='No large evaluation drop detected in this quick search. ';
+   }
+   explanation+=introductory;
+ }else if(after){
+    explanation='Stockfish evaluation after your move: '+displayScore(after)+' (White perspective). '+introductory;
+ }
+ return {heading,explanation};
+}
+function capturedPieceFeedback(move){
+ if(!move.captured)return null;
+ const names={p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen'};
+ let captured=names[move.captured]||'piece';
+ if(move.captured==='q')return 'Critical tactical lesson: Black just captured your QUEEN with '+move.san+'! Before moving a piece, scan for opponent captures on your most valuable pieces, especially bishops on diagonals.';
+ if(move.captured==='r')return 'Black won a rook with '+move.san+'. Check whether that rook was left undefended or pinned.';
+ if(move.captured==='n'||move.captured==='b')return 'Black captured your '+captured+' with '+move.san+'. Before your next move, look for loose pieces and forcing captures.';
+ return 'Black captured a '+captured+'. Check what this changes in the pawn structure and piece activity.';
+}
+
 function explain(m){
  const unit={p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'}[m.piece]||'piece';
  const bits=[];
@@ -157,7 +213,7 @@ function tap(sq){
   const valid=possible.find(x=>x.to===sq);
   if(valid){
     const m=game.move({from:chosen,to:sq,promotion:'q'});
-    chosen=null;possible=[];feedback('white','♙ '+m.san+' — your move',explain(m));waitingBlack('♟ Thinking…','Stockfish is calculating a reply. Your explanation will stay visible.');render();
+    chosen=null;possible=[];lastWhiteMove=m;feedback('white','♙ '+m.san+' — reviewing…',explain(m)+' Stockfish is checking your move against its preferred continuation.');waitingBlack('♟ Thinking…','Stockfish is calculating a reply. Your explanation will stay visible.');render();
     if(!endGame())askEngine('black');return;
   }
  }
@@ -194,11 +250,18 @@ function startEngine(){
   }
   if(l==='readyok'&&!engineReady){
     engineReady=true;clearTimeout(readyTimeout);
-    status('Stockfish ready · You are White. Make your move!');$('hint').disabled=false;render();
+    status('Stockfish ready · Reviewing your options…','loading');render();askEngine('baseline');
   }
+  if(pending&&l.startsWith('info ')&&game.fen()===pending.fen){const score=extractScore(l);if(score)pending.score=score;}
   if(l.startsWith('bestmove ')){
     const candidate=(l.split(/\s+/)[1]||'');const action=pending;pending=null;
     if(!action||candidate==='(none)'||candidate.length<4||game.fen()!==action.fen){continue;}
+    if(action.type==='baseline'){
+      baseline=fromWhite(action.score,'w');
+      baselineBest=sanFromUCI(candidate);
+      status('Your turn · Stockfish coaching ready!');$('hint').disabled=false;render();
+      continue;
+    }
     if(action.type==='hint'){
       const p=parseUCI(candidate),m=game.moves({verbose:true}).find(x=>x.from===p.from&&x.to===p.to);
       if(m){$('planBox').innerHTML='<strong>Engine suggestion:</strong> <span id="hintMove"></span> · Consider what the piece will attack and defend.';$('hintMove').textContent=m.san;}
@@ -206,12 +269,25 @@ function startEngine(){
       continue;
     }
     if(action.type==='black'){
+      const post=fromWhite(action.score,'b');
+      const review=lastWhiteMove?reviewWhiteMove(lastWhiteMove,post):null;
+      if(review)feedback('white',review.heading,review.explanation);
       const p=parseUCI(candidate);let m=null;
       try{m=game.move(p);}catch(_){}
       if(!m){engineError('Stockfish supplied an unusable move. Start a new game.');return;}
-      feedback('black','♟ Stockfish played '+m.san,explain(m));
-      status('Your turn! Respond to '+m.san+'.');
-      $('hint').disabled=false;render();endGame();
+      const tactical=capturedPieceFeedback(m);
+      if(tactical){
+        feedback('black','♟ Stockfish played '+m.san,explain(m)+' '+tactical);
+        if(m.captured==='q'){
+          const original=$('whiteText').textContent;
+          feedback('white','⚠ '+(lastWhiteMove?.san||'Previous move')+' — queen lost',original+' '+tactical);
+        }
+      }else{
+        feedback('black','♟ Stockfish played '+m.san,explain(m));
+      }
+      status('Black replied '+m.san+'. Coach reviewing your next options…','loading');
+      render();
+      if(!endGame())askEngine('baseline');
     }
   }
  }
@@ -223,15 +299,15 @@ function engineError(message){
 }
 function askEngine(type){
  if(!engineReady||pending){return;}
- pending={type,fen:game.fen(),id:++requestId};
+ pending={type,fen:game.fen(),id:++requestId,score:null};
  const conf=settings[$('strength').value];
- status(type==='black'?'Stockfish is choosing a real Black move…':'Stockfish is finding a hint…','loading');
+ status(type==='black'?'Stockfish is calculating Black’s response…':type==='baseline'?'Stockfish is checking White’s options…':'Stockfish is finding a hint…','loading');
  $('hint').disabled=true;
  send('position fen '+pending.fen);
- send('go movetime '+(type==='hint'?700:conf.ms));
+ send('go movetime '+(type==='hint'?700:type==='baseline'?350:conf.ms));
 }
 function newGame(){
- game=new Chess();chosen=null;possible=[];whiteNote='';blackNote='';
+ game=new Chess();chosen=null;possible=[];whiteNote='';blackNote='';baseline=null;baselineBest=null;lastWhiteMove=null;
  feedback('white','♙ Your move','Try d4 for the London. Build central space and develop your bishop before e3.');
  waitingBlack('♟ Black’s move','Waiting for you to play.');
  $('gameResult').textContent='Free browser chess engine. First load needs internet.';
@@ -244,9 +320,9 @@ $('hint').addEventListener('click',()=>{if(engineReady&&game.turn()==='w'&&!pend
 $('undo').addEventListener('click',()=>{
  if(!engineReady||pending||game.turn()!=='w')return;
  const h=game.history();if(!h.length)return;
- game.undo();if(game.history().length&&game.turn()==='b')game.undo();
+ game.undo();if(game.history().length&&game.turn()==='b')game.undo();baseline=null;baselineBest=null;lastWhiteMove=null;
  chosen=null;possible=[];feedback('white','↶ Turn undone','Choose a different move. Watch the center and king safety.');
- waitingBlack('♟ Waiting','Black will respond after your move.');$('planBox').innerHTML='<strong>Try again:</strong> play a developing move or ask for a Stockfish hint.';render();
+ waitingBlack('♟ Waiting','Black will respond after your move.');$('planBox').innerHTML='<strong>Try again:</strong> play a developing move or ask for a Stockfish hint.';render();askEngine('baseline');
 });
 $('flip').addEventListener('click',()=>{flip=!flip;render();});
 newGame();
