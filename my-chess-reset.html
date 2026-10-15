@@ -135,28 +135,33 @@ function classifyOpening(game){
 }
 function showFocus(games,live){
  const root=$('focusItems');root.replaceChildren();
- const selections=[
- {title:'As White: London System',text:'Replace scattered 1.e4 experiments with a repeatable 1.d4 setup. Learn your first eight moves and central plans.',id:'london-classic'},
- {title:'As Black vs 1.e4: Caro-Kann',text:'Build a solid ...c6 and ...d5 center; practice the Advance and Classical variations.',id:'caro-classic'},
- {title:"As Black vs 1.d4: Queen's Gambit Declined",text:'Continue 1...d5 but practice declining the gambit with ...e6, developing before pawn grabs.',id:'qgd-black'}
+ const recent=games.filter(g=>g.klass==='blitz'||g.klass==='rapid');
+ const white=recent.filter(g=>g.side==='white');
+ const blackE4=recent.filter(g=>g.side==='black'&&g.first==='e4');
+ const blackD4=recent.filter(g=>g.side==='black'&&g.first==='d4');
+ const choices=[
+ {title:'As White: London System',text:'Use 1.d4 with a repeatable setup instead of spreading your practice across many 1.e4 variations.',id:'london-classic',games:white,focus:'White score'},
+ {title:'As Black vs 1.e4: Caro-Kann',text:'Play a structured ...c6–d5 center. Compare it with your results against 1.e4.',id:'caro-classic',games:blackE4,focus:'Results vs 1.e4'},
+ {title:"As Black vs 1.d4: Queen's Gambit Declined",text:'Keep 1...d5, learn ...e6, and avoid accepting c4 automatically.',id:'qgd-black',games:blackD4,focus:'Results vs 1.d4'}
  ];
- for(let i=0;i<selections.length;i++){
-  const x=selections[i],node=document.createElement('div');node.className='focus';
-  const num=document.createElement('span');num.className='num';num.textContent=i+1;
+ if(live)choices.sort((a,b)=>{
+  const deficit=x=>x.games.length>=7?(0.5-scoreOf(x.games)):0;
+  return deficit(b)-deficit(a);
+ });
+ choices.forEach((x,i)=>{
+  const node=document.createElement('div');node.className='focus';
+  const badge=document.createElement('span');badge.className='num';badge.textContent=i+1;
   const right=document.createElement('div'),title=document.createElement('strong');title.textContent=x.title;
   const description=document.createElement('p');description.textContent=x.text;
-  const link=document.createElement('a');link.href='./opening-academy.html?lesson='+encodeURIComponent(x.id);link.textContent='Practice this opening →';
-  right.append(title,description,link);node.append(num,right);root.append(node);
- }
- if(live){
-  const white=games.filter(g=>g.klass==='blitz'&&g.side==='white');
-  const black=games.filter(g=>g.klass==='blitz'&&g.side==='black');
-  if(white.length>=10&&black.length>=10){
-   const note=document.createElement('div');note.className='summary';
-   note.textContent='Recent blitz: White '+pct(scoreOf(white))+' over '+white.length+' games; Black '+pct(scoreOf(black))+' over '+black.length+'. These observed scores support tailoring your training, not assuming a cause.';
-   root.append(note);
+  const link=document.createElement('a');link.href='./opening-academy.html?lesson='+encodeURIComponent(x.id);link.textContent='Practice this variation →';
+  right.append(title,description);
+  if(live){
+   const stat=document.createElement('p');stat.className='info';
+   stat.textContent=x.games.length>=7?x.focus+': '+pct(scoreOf(x.games))+' over '+x.games.length+' recent games (win=1, draw=½).':'Sample: '+x.games.length+' games. Not enough to rank reliably (minimum 7).';
+   right.append(stat);
   }
- }
+  right.append(link);node.append(badge,right);root.append(node);
+ });
 }
 function showSnapshot(){
  $('gamesAnalyzed').textContent='—';$('gamesSource').textContent='Waiting for sync';
