@@ -116,9 +116,9 @@ function shareFlag(games){const losses=games.filter(x=>x.outcome==='loss');retur
 function is1510(g){return g.klass==='rapid'&&/^(900(?:\+|\|)10)$/.test(g.tc);}
 function metric(parent,label,count,total,klass=''){
  const wrap=document.createElement('div');wrap.className='metric';wrap.innerHTML='<div class="metric-title"><span></span><b></b></div><div class="meter"><div></div></div>';
- wrap.querySelector('span').textContent=label;wrap.querySelector('b').textContent=(count)+' / '+total;
+ wrap.querySelector('span').textContent=label;wrap.querySelector('b').textContent=(Number.isFinite(count)?count:'—')+' / '+total;
  const bar=wrap.querySelector('.meter');if(klass)bar.classList.add(klass);
- wrap.querySelector('.meter>div').style.width=Math.max(0,Math.min(100,total?100*count/total:0))+'%';parent.append(wrap);
+ wrap.querySelector('.meter>div').style.width=Math.max(0,Math.min(100,total&&Number.isFinite(count)?100*count/total:0))+'%';parent.append(wrap);
 }
 function classifyOpening(game){
  const n=game.opening.toLowerCase();
@@ -198,8 +198,8 @@ function update(games,kind='api'){
  const text=document.createElement('p');text.className='summary';text.textContent='Longest observed losing streak: '+maxLoss+'. Fast requeues: '+rapidRequeue+' of '+Math.max(0,chronological.length-1)+' consecutive-game gaps. This is not a measure of decision quality by itself.';habits.append(text);
  const target=$('targets');target.replaceChildren();
  metric(target,'15+10 rapid games in last 30 days',rapid30.length,20);
- const wscore=scoreOf(w);metric(target,'Blitz as White · 50% score goal',Number.isFinite(wscore)?Math.round(wscore*100):0,50);
- const rateLoss=shareFlag(blitz);metric(target,'Blitz losses NOT on time · 75% target',Number.isFinite(rateLoss)?Math.round((1-rateLoss)*100):0,75);
+ const wscore=scoreOf(w);metric(target,'Blitz as White · 50% score goal',Number.isFinite(wscore)?Math.round(wscore*100):NaN,50);
+ const rateLoss=shareFlag(blitz);metric(target,'Blitz losses NOT on time · 75% target',Number.isFinite(rateLoss)?Math.round((1-rateLoss)*100):NaN,75);
  const reviewsInMonth=reviews.filter(r=>r.when>=Date.now()-30*86400*1000).length;metric(target,'Post-game review notes · 20 goal',reviewsInMonth,20);
  const openings=new Map();for(const g of recent.filter(g=>g.side==='white'&&g.klass==='blitz')){const k=classifyOpening(g);const prev=openings.get(k)||[];prev.push(g);openings.set(k,prev);}
  const sorted=[...openings].filter(([_,gs])=>gs.length>=5).sort((a,b)=>scoreOf(a[1])-scoreOf(b[1]));
