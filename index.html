@@ -81,11 +81,39 @@
  .lesson-box{padding:11px}.feedback-copy{font-size:11px}
 }
 @media(max-width:385px){.brand-credit{font-size:10px}.brand{gap:7px}}
+
+/* 3.2: retain both sides' explanations, and animate feedback updates */
+.story-stack{display:flex;flex-direction:column;gap:7px}
+.story-event{border-radius:11px;padding:9px 10px;background:#1c302c;border:1px solid #527b5b;overflow-wrap:anywhere}
+.story-event[data-tone=black]{background:#233641;border-color:#6186a0}
+.story-event[data-tone=wrong]{background:#482f2d;border-color:#b96b5a}
+.story-event[data-tone=hint]{background:#413b29;border-color:#bfa56f}
+.story-event[data-tone=waiting],.story-event[data-tone=ready]{background:#23332f;border-color:#45665a}
+.story-event[hidden],.mobile-story-row[hidden]{display:none!important}
+.story-label{font-size:9px;letter-spacing:.08em;font-weight:900;color:#c7e88b;margin-bottom:3px}
+.story-event[data-tone=black] .story-label{color:#afd6ee}
+.story-event[data-tone=wrong] .story-label{color:#f8b5aa}
+.story-title{font-size:13px;font-weight:850;line-height:1.3}
+.story-copy{font-size:11px;color:#e3ede4;margin-top:4px;line-height:1.45}
+.story-enter{animation:story-arrive .38s ease-out both}
+@keyframes story-arrive{from{opacity:.55;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.move-feedback{background:#243330;border-color:#53745d}.move-feedback[data-tone=black],.move-feedback[data-tone=wrong],.move-feedback[data-tone=hint],.move-feedback[data-tone=great]{background:#243330;border-color:#53745d}
+@media(max-width:750px){
+ .quick-feedback{display:grid;gap:5px;background:transparent!important;border:0!important;padding:0!important}
+ .mobile-story-row{display:grid;grid-template-columns:42% minmax(0,1fr);gap:5px;align-items:start;background:#264036;border:1px solid #67836b;border-radius:9px;padding:7px 9px;font-size:11px;line-height:1.35}
+ .mobile-story-row strong{font-size:11px;color:#d4efa4}
+ .mobile-story-row span{font-size:11px;color:#f0f3e9;display:block;overflow:visible;white-space:normal}
+ .mobile-story-row[data-tone=black]{background:#243a45;border-color:#6088a2}
+ .mobile-story-row[data-tone=wrong]{background:#4b3031;border-color:#b96b5a}
+ .mobile-story-row[data-tone=hint]{background:#443c29;border-color:#bfa56f}
+ .mobile-story-row[data-tone=waiting]{opacity:.8}
+}
+@media(prefers-reduced-motion:reduce){.story-enter{animation:none}}
 </style>
 </head>
 <body>
   <div class="app">
-    <header class="topbar"><div class="brand"><span class="logomark" aria-hidden="true">♞</span><span>Opening<em>Lab</em></span><span class="brand-credit">by <strong>Twelvy</strong></span><span class="release-tag">v3.1 · compact</span></div><div class="topright"><span class="pill"><span class="online-dot"></span>Offline-friendly · $0</span><button class="outline" id="helpButton" type="button">How it works ↗</button></div></header>
+    <header class="topbar"><div class="brand"><span class="logomark" aria-hidden="true">♞</span><span>Opening<em>Lab</em></span><span class="brand-credit">by <strong>Twelvy</strong></span><span class="release-tag">v3.2 · move feedback</span></div><div class="topright"><span class="pill"><span class="online-dot"></span>Offline-friendly · $0</span><button class="outline" id="helpButton" type="button">How it works ↗</button></div></header>
     <main class="layout">
       <aside class="sidebar">
         <section class="card"><div class="side-head"><div class="eyebrow">Your opening repertoire</div><h1>Master the London.</h1><p>7 bite-size lessons · made for a 1400-rated player</p></div><nav aria-label="Opening lessons" class="course-list" id="courseList"></nav></section>
@@ -94,16 +122,35 @@
       <section class="board-panel">
         <div class="board-title"><div><div class="eyebrow" id="lessonSection">Lesson 01 of 07</div><h2 id="lessonTitle">The London setup</h2><p id="lessonSummary">Know your setup before memorizing variations.</p></div><span class="level-tag">♙ 1400 → 1800</span></div>
         <div class="mode-tabs" role="group" aria-label="Training mode"><button class="mode-btn active" type="button" data-mode="learn" aria-pressed="true">◉ Learn</button><button class="mode-btn" type="button" data-mode="practice" aria-pressed="false">⚡ Practice</button><button class="mode-btn" type="button" data-mode="review" aria-pressed="false">▤ Review moves</button></div>
-        <div id="quickFeedback" class="quick-feedback" data-tone="ready" aria-live="polite"><strong id="quickTitle">Your move ♙</strong><span id="quickBody">Tap your piece and square.</span></div>
+        <div id="quickFeedback" class="quick-feedback" aria-live="polite">
+          <div class="mobile-story-row" id="quickWhiteCard" data-tone="ready"><strong id="quickTitle">♙ Your move</strong><span id="quickBody">Tap a White piece.</span></div>
+          <div class="mobile-story-row" id="quickBlackCard" data-tone="waiting"><strong id="quickBlackTitle">♟ Black's reply</strong><span id="quickBlackBody">Waiting for White.</span></div>
+          <div class="mobile-story-row" id="quickMistakeCard" data-tone="wrong" hidden><strong id="quickMistakeTitle"></strong><span id="quickMistakeBody"></span></div>
+        </div>
         <div class="board-frame"><div class="board" id="board" role="grid" aria-label="Chess board. Tap a piece then its destination."></div></div>
         <div class="board-footer"><button class="outline" id="backButton" type="button">← Back</button><button class="outline" id="resetButton" type="button">↻ Restart</button><span class="spacer"></span><button class="outline" id="flipButton" type="button">⇵ Flip board</button></div>
         <div class="move-ledger" id="moveLedger" aria-live="polite"></div>
       </section>
       <aside class="coach-panel">
         <section class="card move-feedback" id="moveFeedback" data-tone="ready" aria-live="polite">
-          <div class="feedback-heading"><span>LIVE MOVE FEEDBACK</span><span id="turnChip">YOUR TURN</span></div>
-          <div class="feedback-title" id="feedbackTitle">Your move ♙</div>
-          <div class="feedback-copy" id="feedbackBody">Find White's best move on the board. Tap a piece, then its destination.</div>
+          <div class="feedback-heading"><span>MOVE-BY-MOVE FEEDBACK</span><span id="turnChip">YOUR TURN</span></div>
+          <div class="story-stack">
+            <div class="story-event" id="whiteStoryCard" data-tone="ready">
+              <div class="story-label">♙ YOUR MOVE</div>
+              <div class="story-title" id="feedbackWhiteTitle">Your move is next</div>
+              <div class="story-copy" id="feedbackWhiteBody">Choose a move on the board to get an explanation.</div>
+            </div>
+            <div class="story-event" id="blackStoryCard" data-tone="waiting">
+              <div class="story-label">♟ BLACK'S RESPONSE</div>
+              <div class="story-title" id="feedbackBlackTitle">Waiting for White</div>
+              <div class="story-copy" id="feedbackBlackBody">Black's explanation will appear here without replacing yours.</div>
+            </div>
+            <div class="story-event story-mistake" id="mistakeStoryCard" data-tone="wrong" hidden>
+              <div class="story-label">↻ PREVIOUS TRY / HINT</div>
+              <div class="story-title" id="feedbackMistakeTitle"></div>
+              <div class="story-copy" id="feedbackMistakeBody"></div>
+            </div>
+          </div>
           <button type="button" id="nextLessonButton" class="primary next-lesson" hidden>Next lesson →</button>
         </section>
         <section class="card lesson-box"><div class="lesson-top"><span class="eyebrow" id="phaseLabel">Step 1 of 12</span><span class="tiny" id="scoreLabel">Learn at your own pace</span></div><h3 id="stepTitle">Take control of the center</h3><p id="stepText"></p><div id="completionArea"></div><div id="instruction" class="instruction" role="status" aria-live="polite"></div><div class="actions"><button id="mainAction" class="primary" type="button">Show next move →</button><button id="hintButton" class="outline" type="button">💡 Hint</button></div><div class="tip" id="interactionTip">Tap a piece and then its target square, or use “Show next move”.</div></section>
@@ -111,7 +158,7 @@
         <details class="card stats"><summary class="expand-summary">▤ Training stats <span>Expand ▾</span></summary><div class="stats-inner"><div class="eyebrow">Your training stats</div><div class="stat-grid"><div><strong id="completedStat">0/7</strong><span>Drills finished</span></div><div><strong id="attemptStat">0</strong><span>Practice runs</span></div><div><strong id="accuracyStat">—</strong><span>Best accuracy*</span></div></div><div class="streak-note">⭐ Build consistency by revisiting lines you miss. <small>*Accuracy scores reflect the guided drills, not game performance.</small></div></div></details>
       </aside>
     </main>
-    <div class="notice"><strong>OpeningLab v3.1 by Twelvy LLC.</strong> OpeningLab runs locally with no subscription, account, ads, or API key. It teaches curated London System lines and only accepts the target moves during drills; it is <strong>not</strong> a full chess engine yet. Progress is stored in this browser and can be lost if browser data is cleared.</div>
+    <div class="notice"><strong>OpeningLab v3.2 by Twelvy LLC.</strong> OpeningLab runs locally with no subscription, account, ads, or API key. It teaches curated London System lines and only accepts the target moves during drills; it is <strong>not</strong> a full chess engine yet. Progress is stored in this browser and can be lost if browser data is cleared.</div>
     <footer class="footer-links"><button type="button" id="exportButton">Export progress</button> · <button type="button" id="importButton">Import progress</button> · <button type="button" id="aboutButton">About OpeningLab</button> · <span class="credit">A Twelvy LLC project</span><input type="file" id="importInput" accept="application/json,.json" hidden /></footer>
   </div>
   <div id="toast" class="toast" role="alert"></div>
@@ -236,26 +283,75 @@
   const SYMBOLS={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
   const KEY='openinglab-progress-v1';
   let progress=readProgress();let active=0,mode='practice',index=0,board={},selected=null,flipped=false,lastSquares=[],hintSquares=[],mistakes=0,hints=0,finished=false,pendingBlack=null,coachReply='',infoMessage='',feedback={tone:'ready',title:'Your move ♙',body:'Tap a White piece, then its destination. Black replies automatically.'};
+  let whiteStory,blackStory,mistakeStory=null;
   const el=id=>document.getElementById(id), current=()=>LESSONS[active], currentStep=()=>current().steps[index], isWhite=p=>!!p&&p===p.toUpperCase();
   function setFeedback(tone,title,body){feedback={tone,title,body};}
+  function resetStory(){
+    whiteStory={tone:'ready',title:'Your move is next',body:'Play the best move for White, then read why it works.'};
+    blackStory={tone:'waiting',title:'Waiting for White',body:"Black's reply will appear here, alongside your explanation."};
+    mistakeStory=null;
+  }
+  function storeMoveFeedback(step){
+    if(step.side==='w'){
+      whiteStory={tone:'great',title:'✓ '+step.san+' — good move',body:step.why};
+      blackStory={tone:'waiting',title:"Black's reply is coming…",body:'Your move explanation will stay visible.'};
+      setFeedback('great','✓ Correct — '+step.san,step.why);
+    }else{
+      blackStory={tone:'black',title:'♟ Black played …'+step.san,body:step.why+(step.threat?' '+step.threat:'')};
+      setFeedback('black','♟ Black played …'+step.san,blackStory.body);
+    }
+  }
+  function restoreStory(){
+    resetStory();
+    for(let i=0;i<index;i++){
+      const x=current().steps[i];
+      if(x.side==='w'){
+        whiteStory={tone:'great',title:'✓ '+x.san+' — good move',body:x.why};
+        blackStory={tone:'waiting',title:"Black's reply is coming…",body:'Your explanation stays visible.'};
+      }else{
+        blackStory={tone:'black',title:'♟ Black played …'+x.san,body:x.why+(x.threat?' '+x.threat:'')};
+      }
+    }
+  }
+  function showStoryPart(kind,story){
+    const sets={
+      white:['whiteStoryCard','feedbackWhiteTitle','feedbackWhiteBody','quickWhiteCard','quickTitle','quickBody'],
+      black:['blackStoryCard','feedbackBlackTitle','feedbackBlackBody','quickBlackCard','quickBlackTitle','quickBlackBody'],
+      mistake:['mistakeStoryCard','feedbackMistakeTitle','feedbackMistakeBody','quickMistakeCard','quickMistakeTitle','quickMistakeBody']
+    };
+    const ids=sets[kind],desktop=el(ids[0]),mobile=el(ids[3]);
+    if(!story){desktop.hidden=true;mobile.hidden=true;return;}
+    desktop.hidden=false;mobile.hidden=false;
+    desktop.dataset.tone=story.tone;mobile.dataset.tone=story.tone;
+    const newStory=el(ids[1]).textContent!==story.title||el(ids[2]).textContent!==story.body;
+    el(ids[1]).textContent=story.title;el(ids[2]).textContent=story.body;
+    el(ids[4]).textContent=story.title;el(ids[5]).textContent=story.body;
+    if(newStory){
+      for(const card of [desktop,mobile]){
+        card.classList.remove('story-enter');
+        void card.offsetWidth;
+        card.classList.add('story-enter');
+      }
+    }
+  }
   function readProgress(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');if(x&&typeof x==='object')return x;}catch(e){}return {lessons:{},attempts:0};}
   function saveProgress(){try{localStorage.setItem(KEY,JSON.stringify(progress));}catch(e){showToast('Browser storage is unavailable; progress may not persist.')}}
   function initialBoard(){const x={};START_ROWS.forEach((r,rank)=>[...r].forEach((p,file)=>{if(p!=='.')x[FILES[file]+(8-rank)]=p;}));return x;}
   function makeMove(step){const p=board[step.from];if(!p){console.error('Invalid lesson move missing piece',step);return false}delete board[step.from];delete board[step.to];board[step.to]=p;if(p.toLowerCase()==='k'&&Math.abs(FILES.indexOf(step.to[0])-FILES.indexOf(step.from[0]))===2){const rank=step.from[1],isShort=step.to[0]==='g',rookFrom=(isShort?'h':'a')+rank,rookTo=(isShort?'f':'d')+rank;board[rookTo]=board[rookFrom];delete board[rookFrom];}lastSquares=[step.from,step.to];return true;}
   function rebuild(upto){board=initialBoard();lastSquares=[];for(let i=0;i<upto;i++)makeMove(current().steps[i]);selected=null;hintSquares=[];}
-  function setLesson(next){clearTimeout(pendingBlack);active=next;index=0;finished=false;mistakes=0;hints=0;infoMessage='';coachReply='';rebuild(0);setFeedback('ready','Your move ♙','Start this lesson by choosing your first White move.');render();if(mode==='practice')advanceBlack();}
-  function setMode(m){clearTimeout(pendingBlack);mode=m;index=0;mistakes=0;hints=0;finished=false;infoMessage='';coachReply='';rebuild(0);setFeedback('ready',m==='practice'?'Your move ♙':'Explore this line',m==='practice'?'Play White on the board. Black replies after a correct move.':'Study this line and review the explanations.');if(m==='practice'){progress.attempts=(progress.attempts||0)+1;saveProgress();}render();if(m==='practice')advanceBlack();}
+  function setLesson(next){clearTimeout(pendingBlack);active=next;index=0;finished=false;mistakes=0;hints=0;infoMessage='';coachReply='';rebuild(0);resetStory();setFeedback('ready','Your move ♙','Start this lesson by choosing your first White move.');render();if(mode==='practice')advanceBlack();}
+  function setMode(m){clearTimeout(pendingBlack);mode=m;index=0;mistakes=0;hints=0;finished=false;infoMessage='';coachReply='';rebuild(0);resetStory();setFeedback('ready',m==='practice'?'Your move ♙':'Explore this line',m==='practice'?'Play White on the board. Black replies after a correct move.':'Study this line and review the explanations.');if(m==='practice'){progress.attempts=(progress.attempts||0)+1;saveProgress();}render();if(m==='practice')advanceBlack();}
   function finish(){if(finished)return;finished=true;clearTimeout(pendingBlack);if(mode==='practice'){const score=Math.max(20,100-mistakes*12-hints*6);const p=progress.lessons||{};const prev=p[current().id]||{};p[current().id]={completed:true,best:Math.max(prev.best||0,score),last:Date.now()};progress.lessons=p;saveProgress();infoMessage=`Drill finished! ${score}% accuracy. ${mistakes} miss${mistakes===1?'':'es'} and ${hints} hint${hints===1?'':'s'}.`;setFeedback('great',`🎉 Lesson complete — ${score}%`,'Well done! Ready for the next variation?'); }else{infoMessage='You reached the end of this line. Ready to test your recall?';}render();}
-  function goForward(forceWhite=false){if(finished){setMode('practice');return;}if(index>=current().steps.length){finish();return;}if(mode==='practice'&&currentStep().side==='w'&&!forceWhite)return;const step=currentStep();if(!makeMove(step)){showToast('There is a lesson data error.');return;}index++;hintSquares=[];selected=null;infoMessage='';coachReply='';if(step.side==='w'){setFeedback('great',`✓ Correct — ${step.san}`,step.why);}else{setFeedback('black',`♟ Black played …${step.san}`,step.why+(step.threat?' '+step.threat:''));}if(index>=current().steps.length){finish();return}render();if(mode==='practice')advanceBlack();}
+  function goForward(forceWhite=false){if(finished){setMode('practice');return;}if(index>=current().steps.length){finish();return;}if(mode==='practice'&&currentStep().side==='w'&&!forceWhite)return;const step=currentStep();if(!makeMove(step)){showToast('There is a lesson data error.');return;}index++;hintSquares=[];selected=null;infoMessage='';coachReply='';storeMoveFeedback(step);if(index>=current().steps.length){finish();return}render();if(mode==='practice')advanceBlack();}
   function advanceBlack(){clearTimeout(pendingBlack);if(mode!=='practice'||finished)return;const step=currentStep();if(step&&step.side==='b'){pendingBlack=setTimeout(()=>{pendingBlack=null;if(mode==='practice'&&!finished&&currentStep()===step)goForward();},720);}}
-  function goBack(){clearTimeout(pendingBlack);if(index===0)return;let target=index-1;if(mode==='practice'){while(target>0&&current().steps[target].side==='b')target--;}index=target;finished=false;infoMessage='';coachReply='';rebuild(index);render();if(mode==='practice')advanceBlack();}
-  function reset(){clearTimeout(pendingBlack);index=0;mistakes=0;hints=0;finished=false;infoMessage='';coachReply='';rebuild(0);render();if(mode==='practice'){progress.attempts=(progress.attempts||0)+1;saveProgress();advanceBlack();}}
-  function userMove(to){if(finished||mode==='review')return;const step=currentStep();if(!step||step.side!=='w'){showToast('Black is moving. One moment…');return;}if(selected===null){const p=board[to];if(isWhite(p)){selected=to;renderBoard();}else{showToast('Tap one of your white pieces first.');}return;}if(selected===to){selected=null;renderBoard();return;}if(isWhite(board[to])){selected=to;renderBoard();return;}if(selected===step.from&&to===step.to){selected=null;goForward(true);return;}selected=null;mistakes+=mode==='practice'?1:0;infoMessage=mode==='practice'?'Not the target move for this drill. Check the position and try again.':'Try the highlighted lesson move, or use Show next move.';setFeedback('wrong','↻ Not quite — try again','That is not the target move for this drill. Look for a developing or central move, or tap Hint.');if(mode==='learn')hintSquares=[step.from,step.to];render();}
-  function giveHint(){if(finished)return;const step=currentStep();if(!step)return;hintSquares=[step.from,step.to];if(mode==='practice'&&step.side==='w')hints++;infoMessage=`Hint: ${step.san} — move from ${step.from} to ${step.to}. ${mode==='practice'?'A hint reduces the drill score slightly.':''}`;setFeedback('hint',`💡 Hint — ${step.san}`,`${step.from} → ${step.to}. ${step.why}`);render();}
+  function goBack(){clearTimeout(pendingBlack);if(index===0)return;let target=index-1;if(mode==='practice'){while(target>0&&current().steps[target].side==='b')target--;}index=target;finished=false;infoMessage='';coachReply='';rebuild(index);restoreStory();render();if(mode==='practice')advanceBlack();}
+  function reset(){clearTimeout(pendingBlack);index=0;mistakes=0;hints=0;finished=false;infoMessage='';coachReply='';rebuild(0);resetStory();render();if(mode==='practice'){progress.attempts=(progress.attempts||0)+1;saveProgress();advanceBlack();}}
+  function userMove(to){if(finished||mode==='review')return;const step=currentStep();if(!step||step.side!=='w'){showToast('Black is moving. One moment…');return;}if(selected===null){const p=board[to];if(isWhite(p)){selected=to;renderBoard();}else{showToast('Tap one of your white pieces first.');}return;}if(selected===to){selected=null;renderBoard();return;}if(isWhite(board[to])){selected=to;renderBoard();return;}if(selected===step.from&&to===step.to){selected=null;goForward(true);return;}selected=null;mistakes+=mode==='practice'?1:0;infoMessage=mode==='practice'?'Not the target move for this drill. Check the position and try again.':'Try the highlighted lesson move, or use Show next move.';mistakeStory={tone:'wrong',title:'↻ Earlier try — not the lesson move',body:'This guided drill expects a particular idea: '+step.title+'. '+step.why+' Try again or tap Hint. This does not mean every alternative is illegal.'};setFeedback('wrong',mistakeStory.title,mistakeStory.body);if(mode==='learn')hintSquares=[step.from,step.to];render();}
+  function giveHint(){if(finished)return;const step=currentStep();if(!step)return;hintSquares=[step.from,step.to];if(mode==='practice'&&step.side==='w')hints++;infoMessage=`Hint: ${step.san} — move from ${step.from} to ${step.to}. ${mode==='practice'?'A hint reduces the drill score slightly.':''}`;mistakeStory={tone:'hint',title:'💡 Hint — '+step.san,body:step.from+' → '+step.to+'. '+step.why};setFeedback('hint',mistakeStory.title,mistakeStory.body);render();}
   function moveList(){let html='';for(let i=0;i<index;i++){const s=current().steps[i];if(s.side==='w')html+=`<strong>${Math.floor(i/2)+1}.</strong> ${s.san} `;else html+=`${s.san} &nbsp; `;}return html||'<span style="color:#7f9992">Your moves will appear here.</span>';}
   function renderBoard(){const node=el('board');node.innerHTML='';const ranks=flipped?[1,2,3,4,5,6,7,8]:[8,7,6,5,4,3,2,1],files=flipped?[...FILES].reverse():[...FILES];for(let row=0;row<8;row++)for(let col=0;col<8;col++){const sq=files[col]+ranks[row],p=board[sq],dark=((FILES.indexOf(sq[0])+Number(sq[1]))%2===0);const b=document.createElement('button');b.type='button';b.className='sq'+(dark?' dark':'')+(selected===sq?' selected':'')+(lastSquares.includes(sq)?' last':'')+(hintSquares.includes(sq)?' hint':'');b.setAttribute('role','gridcell');b.setAttribute('aria-label',`${sq}, ${p? (isWhite(p)?'white ':'black ')+({p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'}[p.toLowerCase()]):'empty'}`);b.dataset.square=sq;let txt='';if(p)txt+=`<span class="piece ${isWhite(p)?'white':'black'}" aria-hidden="true">${SYMBOLS[p]}</span>`;if(col===0)txt+=`<span class="coord rank">${ranks[row]}</span>`;if(row===7)txt+=`<span class="coord file">${files[col]}</span>`;b.innerHTML=txt;b.addEventListener('click',()=>userMove(sq));node.appendChild(b);}}
   function renderCourses(){const list=el('courseList');list.innerHTML='';LESSONS.forEach((l,i)=>{const done=progress.lessons?.[l.id]?.completed;const b=document.createElement('button');b.type='button';b.className='course-button'+(i===active?' active':'');b.innerHTML=`<span class="course-number">${String(i+1).padStart(2,'0')}</span><span class="course-info"><div class="course-title">${l.title}</div><div class="course-sub">${l.subtitle}</div></span>${done?'<span class="check" aria-label="completed">✓</span>':''}`;b.setAttribute('aria-current',i===active?'true':'false');b.addEventListener('click',()=>setLesson(i));list.appendChild(b);});}
-  function render(){const lesson=current(),step=currentStep(),prev=index>0?lesson.steps[index-1]:null,done=Object.values(progress.lessons||{}).filter(x=>x?.completed).length,best=Object.values(progress.lessons||{}).filter(x=>x?.completed).map(x=>x.best||0);renderCourses();renderBoard();el('moveFeedback').dataset.tone=feedback.tone;el('feedbackTitle').textContent=feedback.title;el('feedbackBody').textContent=feedback.body;el('quickFeedback').dataset.tone=feedback.tone;el('quickTitle').textContent=feedback.title;el('quickBody').textContent=feedback.body;el('turnChip').textContent=finished?'COMPLETED':step?.side==='b'?'BLACK MOVING':mode==='practice'?'YOUR TURN':'STUDY';el('nextLessonButton').hidden=!finished;el('lessonSection').textContent=`Lesson ${String(active+1).padStart(2,'0')} of ${String(LESSONS.length).padStart(2,'0')}`;el('lessonTitle').textContent=lesson.title;el('lessonSummary').textContent=lesson.subtitle;document.querySelectorAll('.mode-btn').forEach(x=>{const yes=x.dataset.mode===mode;x.classList.toggle('active',yes);x.setAttribute('aria-pressed',String(yes));});el('moveLedger').innerHTML=moveList();el('progressNumber').textContent=`${Math.round(done/LESSONS.length*100)}%`;el('progressBar').style.width=`${done/LESSONS.length*100}%`;el('progressCopy').textContent=`${done} of ${LESSONS.length} training drills completed.`;el('completedStat').textContent=`${done}/${LESSONS.length}`;el('attemptStat').textContent=progress.attempts||0;el('accuracyStat').textContent=best.length?Math.max(...best)+'%':'—';el('scoreLabel').textContent=mode==='practice'?`${mistakes} misses · ${hints} hints`:mode==='review'?'Replay any move':'Learn at your own pace';el('backButton').disabled=index===0;
+  function render(){const lesson=current(),step=currentStep(),prev=index>0?lesson.steps[index-1]:null,done=Object.values(progress.lessons||{}).filter(x=>x?.completed).length,best=Object.values(progress.lessons||{}).filter(x=>x?.completed).map(x=>x.best||0);renderCourses();renderBoard();showStoryPart('white',whiteStory);showStoryPart('black',blackStory);showStoryPart('mistake',mistakeStory);el('turnChip').textContent=finished?'COMPLETED':step?.side==='b'?'BLACK MOVING':mode==='practice'?'YOUR TURN':'STUDY';el('nextLessonButton').hidden=!finished;el('lessonSection').textContent=`Lesson ${String(active+1).padStart(2,'0')} of ${String(LESSONS.length).padStart(2,'0')}`;el('lessonTitle').textContent=lesson.title;el('lessonSummary').textContent=lesson.subtitle;document.querySelectorAll('.mode-btn').forEach(x=>{const yes=x.dataset.mode===mode;x.classList.toggle('active',yes);x.setAttribute('aria-pressed',String(yes));});el('moveLedger').innerHTML=moveList();el('progressNumber').textContent=`${Math.round(done/LESSONS.length*100)}%`;el('progressBar').style.width=`${done/LESSONS.length*100}%`;el('progressCopy').textContent=`${done} of ${LESSONS.length} training drills completed.`;el('completedStat').textContent=`${done}/${LESSONS.length}`;el('attemptStat').textContent=progress.attempts||0;el('accuracyStat').textContent=best.length?Math.max(...best)+'%':'—';el('scoreLabel').textContent=mode==='practice'?`${mistakes} misses · ${hints} hints`:mode==='review'?'Replay any move':'Learn at your own pace';el('backButton').disabled=index===0;
     el('completionArea').innerHTML=finished?`<div class="completion"><strong>✓ ${mode==='practice'?'Lesson mastered!':'Line complete!'}</strong><p>${infoMessage}</p></div>`:'';
     if(finished){el('phaseLabel').textContent='All moves complete';el('stepTitle').textContent='Excellent work ♟';el('stepText').textContent='The goal is to understand the ideas, not just memorize the moves. Revisit this line later to reinforce it.';el('instruction').textContent='Try Practice mode or explore another London variation.';el('instruction').className='instruction good';el('mainAction').textContent='Practice this line →';el('mainAction').disabled=false;el('hintButton').disabled=true;el('interactionTip').textContent='Completed drills are saved to this browser.';}
     else{el('phaseLabel').textContent=`Step ${index+1} of ${lesson.steps.length}`;el('stepTitle').textContent=mode==='practice'?(step?.side==='b'?'Watch Black respond':`Find White’s move #${lesson.steps.slice(0,index+1).filter(s=>s.side==='w').length}`):mode==='review'?'Move-by-move replay':step.title;el('stepText').textContent=mode==='practice'?(step?.side==='b'?'Study the reply, then respond with your next move.':`Find the best London System move for this position. ${index===0?'You are playing White.':''}`):mode==='review'?(prev?`${prev.san}: ${prev.why}`:'Replay the entire line and study the explanation behind each move.'):`${step.why}`;
@@ -268,7 +364,7 @@
   el('nextLessonButton').addEventListener('click',()=>setLesson((active+1)%LESSONS.length));el('helpButton').addEventListener('click',help);el('aboutButton').addEventListener('click',help);el('flipButton').addEventListener('click',()=>{flipped=!flipped;renderBoard()});el('backButton').addEventListener('click',goBack);el('resetButton').addEventListener('click',reset);el('hintButton').addEventListener('click',giveHint);el('mainAction').addEventListener('click',()=>{if(finished){setMode('practice');return;}if(mode==='practice')return;goForward();});document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));document.querySelectorAll('[data-question]').forEach(b=>b.addEventListener('click',()=>coachQuestion(b.dataset.question)));
   el('exportButton').addEventListener('click',()=>{const data=new Blob([JSON.stringify({app:'OpeningLab',version:1,progress},null,2)],{type:'application/json'}),url=URL.createObjectURL(data),a=document.createElement('a');a.href=url;a.download='openinglab-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});el('importButton').addEventListener('click',()=>el('importInput').click());el('importInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const x=JSON.parse(await f.text());if(x?.app!=='OpeningLab'||!x?.progress||typeof x.progress!=='object'||!x.progress.lessons||typeof x.progress.lessons!=='object')throw Error('Invalid file');const clean={lessons:{},attempts:Math.max(0,Math.min(100000,Number(x.progress.attempts)||0))};for(const l of LESSONS){const p=x.progress.lessons[l.id];if(p?.completed)clean.lessons[l.id]={completed:true,best:Math.min(100,Math.max(0,Number(p.best)||0)),last:Number(p.last)||0};}progress=clean;saveProgress();render();showToast('Your progress was imported successfully.');}catch(err){showToast('Could not import this progress file.');}e.target.value='';});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}
-  rebuild(0);setMode('practice');
+  rebuild(0);resetStory();setMode('practice');
   </script>
 </body>
 </html>
