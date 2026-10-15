@@ -203,6 +203,114 @@ function capturedPieceFeedback(move){
  return 'Black captured a '+captured+'. Check what this changes in the pawn structure and piece activity.';
 }
 
+
+/* Instant, position-grounded Coach Lab. Stockfish search is the authority for moves and scores. */
+let baselinePV=[],coachBusy=false,coachHistory=[];
+const pieceName={p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'};
+function showChat(role,body){
+ const el=document.createElement('div');el.className='chat-msg '+role;
+ const label=document.createElement('span');label.className='speaker';label.textContent=role==='user'?'YOU':'COACH LAB';
+ const p=document.createElement('p');p.textContent=String(body).slice(0,1800);el.append(label,p);
+ $('chatLog').append(el);
+ while($('chatLog').children.length>22)$('chatLog').children[0].remove();
+ $('chatLog').scrollTop=$('chatLog').scrollHeight;
+ coachHistory.push({role:role==='user'?'user':'assistant',content:String(body).slice(0,400)});
+ if(coachHistory.length>10)coachHistory.shift();
+}
+function parsePV(s){
+ const mark=s.indexOf(' pv ');if(mark<0)return [];
+ return s.slice(mark+4).trim().split(/\s+/).filter(v=>/^[a-h][1-8][a-h][1-8][nbrq]?$/.test(v)).slice(0,10);
+}
+function pvLine(){
+ const b=new Chess(game.fen()),a=[];
+ for(const str of baselinePV.slice(0,8)){const m=parseUCI(str);try{a.push(b.move(m).san);}catch(_){break;}}
+ return a.join(' → ');
+}
+function threats(){
+ const danger=[];
+ for(let rank=1;rank<=8;rank++)for(const col of 'abcdefgh'){
+  const sq=col+rank,p=game.get(sq);
+  if(!p||p.color!=='w'||p.type==='k')continue;
+  const attackers=game.attackers(sq,'b');
+  if(!attackers.length)continue;
+  const defenders=game.attackers(sq,'w');
+  danger.push({sq,piece:pieceName[p.type],attackers,defenders,priority:({q:9,r:5,b:3,n:3,p:1}[p.type]||1)});
+ }
+ danger.sort((a,b)=>b.priority-a.priority||a.defenders.length-b.defenders.length);
+ return danger.slice(0,4).map(x=>x.piece+' on '+x.sq+' attacked from '+x.attackers.join(', ')+(x.defenders.length?'; defended from '+x.defenders.join(', '):'; no direct defenders'));
+}
+function coachFacts(){
+ const m=game.history({verbose:true}),last=m.at(-1),white=m.findLast(x=>x.color==='w'),black=m.findLast(x=>x.color==='b');
+ return {fen:game.fen(),turn:game.turn()==='w'?'White':'Black',
+  moves:m.slice(-14).map(x=>x.san).join(' '),last:last?.san||'none',
+  whiteMove:white?.san||'none',blackMove:black?.san||'none',
+  whiteNote:$('whiteText').textContent,blackNote:$('blackText').textContent,
+  stockfishEvaluation:baseline?displayScore(baseline):'unavailable or pending',
+  bestWhiteMove:game.turn()==='w'?(baselineBest||'pending'):'Black is moving',
+  pv:game.turn()==='w'?pvLine():'',inCheck:game.isCheck(),threats:threats()};
+}
+function instantCoach(raw){
+ const q=raw.toLowerCase().trim(),f=coachFacts(),m=game.history({verbose:true});
+ const mine=m.findLast(x=>x.color==='w'),black=m.findLast(x=>x.color==='b');
+ const suggest=f.bestWhiteMove!=='pending'&&f.bestWhiteMove!=='Black is moving'?'Stockfish currently prefers '+f.bestWhiteMove+'. ':'Stockfish is still calculating its preferred move. ';
+ const danger=f.threats.length?f.threats.slice(0,3).join('; '):'No immediate direct attacks on White pieces detected. That does not rule out forks, pins or deeper tactics.';
+ if(/^(hi|hello|hey|yo|bonjour)\b/.test(q))return 'Hey! I can explain your last move, Black’s threats, and current Stockfish candidates. Try 1.d4 or ask a question about this position.';
+ if(/what if|if i play|can i play|how about|suppose i play/.test(q)){
+  const found=q.match(/\b(?:[kqrbn]?[a-h]?[1-8]?x?[a-h][1-8](?:=[qrbn])?[+#]?|[a-h][1-8][a-h][1-8][qrbn]?|o-o-o|o-o)\b/i);
+  if(!found)return 'Name a specific move, such as “What if I play e4?” I will check if it is legal and describe its idea.';
+  if(game.turn()!=='w')return 'Black is still moving. Ask again after its response.';
+  const token=found[0].toLowerCase().replace(/[+#]/g,'');
+  const legal=game.moves({verbose:true});
+  const move=legal.find(x=>x.san.toLowerCase().replace(/[+#]/g,'')===token||x.from+x.to===token);
+  if(!move)return found[0]+' is not a legal move in the current position. Try a highlighted legal move.';
+  return move.san+' is legal. '+explain(move)+' '+suggest+'This hypothetical move has not been separately engine-evaluated. Play it for a detailed engine review.';
+ }
+ if(/queen|blunder|mistake|bad move|wrong|inaccuracy|why (was|is) my|last move|what happened/.test(q)){
+  if(!mine)return 'You have not played a move yet. Make your first move and then ask me to review it.';
+  return 'Your last White move was '+mine.san+'. '+f.whiteNote+
+   (black?.captured==='q'?' Black responded '+black.san+' and captured your queen; check the exposed diagonal and undefended pieces before committing.':'')+
+   ' Current dangers: '+danger+'.';
+ }
+ if(/threat|attac|danger|undefended|hanging|loose|black trying|check\b|safe/.test(q)){
+  return (black?'Black just played '+black.san+'. '+f.blackNote+' ':'Black has not made a move yet. ')+
+   (f.inCheck?'You are in CHECK and must answer the check. ':'')+
+   'Immediate attacks on White: '+danger+'. This is a direct-attack scan, not a complete tactical search.';
+ }
+ if(/line|variation|sequence|continuation|next few|next three/.test(q)){
+  if(game.turn()!=='w')return 'Wait for Black to finish. I can show White’s candidate sequence when it is your turn.';
+  return suggest+(f.pv?'One possible short line: '+f.pv+'.':'The last search did not return a usable full variation.')+' Not forced; Black can vary.';
+ }
+ if(/eval|score|advantage|winning|losing|who is better|material/.test(q)){
+  return 'Current quick Stockfish evaluation from White’s perspective: '+f.stockfishEvaluation+'. Positive favors White; negative favors Black. '+suggest+'This search is limited and the score may change at greater depth.';
+ }
+ if(/best|what should|recommend|suggest|next move|hint|what do i do|should i play|what is my move/.test(q)){
+  if(game.turn()!=='w')return 'Black is still choosing its move. Wait until the board says it is your turn.';
+  return suggest+(f.pv?' Possible continuation: '+f.pv+'.':'')+' Check forcing moves and piece safety before deciding.';
+ }
+ if(/plan|london|strateg|develop|bishop|castle|opening|pawn structure|center/.test(q)){
+  return 'In the London, aim for d4, an active bishop on f4 before e3, knights developed, a stable center and safe castling—but adapt to ...c5, ...Qb6 or ...Nh5. '+suggest+'Be careful about '+danger+'.';
+ }
+ return 'On the current board, it is '+f.turn+' to move. The latest move was '+f.last+'. Stockfish estimates '+f.stockfishEvaluation+' for White. '+suggest+(f.pv?' A candidate line: '+f.pv+'.':'')+' Direct threats: '+danger+'. Ask a more specific question and I’ll focus on it.';
+}
+async function askCoach(message){
+ const q=String(message||'').trim().slice(0,300);
+ if(!q||coachBusy)return;
+ coachBusy=true;$('coachSend').disabled=true;$('coachInput').value='';
+ showChat('user',q);
+ try{
+  let answer='';
+  if(localModel){
+   const context='You are Coach Lab, a concise friendly chess teacher for a 1400-rated London System player. Answer the question in at most 100 words using ONLY factual current position data, and do not invent Stockfish lines or evaluations. When available, suggest a concrete move. Verified context: '+JSON.stringify(coachFacts());
+   const response=await localModel.chat.completions.create({messages:[{role:'system',content:context},...coachHistory.slice(-5)],temperature:0.2,max_tokens:210});
+   answer=response.choices?.[0]?.message?.content?.trim()||'';
+  }
+  showChat('assistant',answer||instantCoach(q));
+ }catch(e){showChat('assistant','Local AI is unavailable right now. Here is a board-grounded answer: '+instantCoach(q));}
+ coachBusy=false;$('coachSend').disabled=false;
+}
+$('coachForm').addEventListener('submit',e=>{e.preventDefault();askCoach($('coachInput').value);});
+document.querySelectorAll('[data-coach-ask]').forEach(b=>b.addEventListener('click',()=>askCoach(b.dataset.coachAsk)));
+
 function explain(m){
  const unit={p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'}[m.piece]||'piece';
  const bits=[];
@@ -295,13 +403,13 @@ function startEngine(){
     engineReady=true;clearTimeout(readyTimeout);
     status('Stockfish ready · Reviewing your options…','loading');render();askEngine('baseline');
   }
-  if(pending&&l.startsWith('info ')&&game.fen()===pending.fen){const score=extractScore(l);if(score)pending.score=score;}
+  if(pending&&l.startsWith('info ')&&game.fen()===pending.fen){const score=extractScore(l);if(score)pending.score=score;const pv=parsePV(l);if(pv.length)pending.pv=pv;}
   if(l.startsWith('bestmove ')){
     const candidate=(l.split(/\s+/)[1]||'');const action=pending;pending=null;
     if(!action||candidate==='(none)'||candidate.length<4||game.fen()!==action.fen){continue;}
     if(action.type==='baseline'){
       baseline=fromWhite(action.score,'w');
-      baselineBest=sanFromUCI(candidate);
+      baselineBest=sanFromUCI(candidate);baselinePV=action.pv||[];
       status('Your turn · Stockfish coaching ready!');$('hint').disabled=false;render();
       continue;
     }
@@ -350,7 +458,7 @@ function askEngine(type){
  send('go movetime '+(type==='hint'?700:type==='baseline'?350:conf.ms));
 }
 function newGame(){
- game=new Chess();chosen=null;possible=[];whiteNote='';blackNote='';baseline=null;baselineBest=null;lastWhiteMove=null;
+ game=new Chess();chosen=null;possible=[];whiteNote='';blackNote='';baseline=null;baselineBest=null;baselinePV=[];lastWhiteMove=null;coachHistory=[];$('chatLog').innerHTML='';showChat('assistant','New game. Ask me what Black is threatening, what Stockfish prefers, or why a move was a mistake.');
  feedback('white','♙ Your move','Try d4 for the London. Build central space and develop your bishop before e3.');
  waitingBlack('♟ Black’s move','Waiting for you to play.');
  $('gameResult').textContent='Free browser chess engine. First load needs internet.';
@@ -363,7 +471,7 @@ $('hint').addEventListener('click',()=>{if(engineReady&&game.turn()==='w'&&!pend
 $('undo').addEventListener('click',()=>{
  if(!engineReady||pending||game.turn()!=='w')return;
  const h=game.history();if(!h.length)return;
- game.undo();if(game.history().length&&game.turn()==='b')game.undo();baseline=null;baselineBest=null;lastWhiteMove=null;
+ game.undo();if(game.history().length&&game.turn()==='b')game.undo();baseline=null;baselineBest=null;baselinePV=[];lastWhiteMove=null;
  chosen=null;possible=[];feedback('white','↶ Turn undone','Choose a different move. Watch the center and king safety.');
  waitingBlack('♟ Waiting','Black will respond after your move.');$('planBox').innerHTML='<strong>Try again:</strong> play a developing move or ask for a Stockfish hint.';render();askEngine('baseline');
 });
