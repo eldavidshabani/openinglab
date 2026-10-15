@@ -52,5 +52,10 @@ line('kid-fianchetto',"King's Indian Defense",'b','Against Fianchetto','Meet Whi
 'd4 Nf6 c4 g6 g3 Bg7 Bg2 O-O Nf3 d6 O-O',
 '...Nf6 controls central squares.|...g6 prepares the bishop fianchetto.|...Bg7 activates a long diagonal.|Castle to secure the king.|...d6 prepares ...e5 and restrains central play.')
 ];
+
+lines.push(line('qgd-black',"Queen's Gambit Declined",'b','QGD as Black: solid refusal','Keep 1...d5, decline the gambit','After 1.d4 d5 2.c4, play ...e6, develop ...Nf6 and ...Be7, then castle before seeking ...c5 or ...e5.','Avoid accepting the c4-pawn automatically: develop first and challenge the center with a plan.',
+'d4 d5 c4 e6 Nc3 Nf6 Bg5 Be7 e3 O-O Nf3 Nbd7',
+'...d5 meets 1.d4 with central space.|...e6 reinforces d5 and declines the c4-pawn gambit.|...Nf6 develops and builds central control.|...Be7 breaks the potential bishop pin and supports castling.|Castle: protect your king before seeking pawn breaks.|...Nbd7 develops, reinforces e5 and helps prepare ...c5.'));
+
 window.OPENINGLAB_ACADEMY_LINES=lines;
 })();
