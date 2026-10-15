@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101a20">
+<meta name="description" content="OpeningLab by Twelvy: personalized chess improvement plan from your own public Chess.com games.">
+<title>OpeningLab · Twelvy0 Chess Reset</title>
+<style>
+:root{--bg:#101a20;--panel:#192a30;--panel2:#23383e;--stroke:#425555;--text:#f1f6e9;--muted:#a9c1c0;--lime:#c8ed8b;--blue:#a9d4ed;--red:#f3b6a9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px/1.48 system-ui,-apple-system,'Segoe UI',sans-serif}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--lime);outline-offset:3px}a{color:var(--lime)}
+.shell{max-width:1140px;margin:auto;padding:10px 16px 35px}.header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:4px 0 12px;border-bottom:1px solid var(--stroke)}.brand{color:var(--text);text-decoration:none;font-size:20px;font-weight:900;display:flex;gap:9px;align-items:center}.brand b{color:var(--lime)}.mark{width:31px;height:31px;background:var(--lime);border-radius:9px;color:#13291d;display:grid;place-items:center;font-size:23px}.by{font-size:10px;color:var(--lime)}.links{display:flex;gap:9px;font-size:11px}.links a{text-decoration:none;padding:7px 8px;border:1px solid var(--stroke);border-radius:9px}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:16px 0}.hero h1{font-size:27px;margin:3px 0 4px;line-height:1.17}.hero p{margin:0;color:var(--muted);font-size:12px}.eyebrow{color:var(--lime);font-size:10px;font-weight:900;letter-spacing:.10em}.tag{border:1px solid #5e7b5d;border-radius:30px;color:var(--lime);font-size:11px;padding:7px 10px;white-space:nowrap}
+.card{border:1px solid var(--stroke);background:var(--panel);border-radius:15px;padding:14px;min-width:0}.card h2{margin:4px 0 9px;font-size:17px}.card h3{margin:4px 0 9px;font-size:14px}.info{color:var(--muted);font-size:11px;line-height:1.45}.sync{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.sync label{font-size:11px;color:var(--muted)}.sync input[type=text]{width:155px;border:1px solid #536c69;background:#10232a;color:#f2f7e9;border-radius:8px;padding:8px}.btn{border:1px solid #637c6a;padding:8px 11px;background:#27403d;color:var(--text);border-radius:9px;font-weight:700;font-size:11px}.btn.primary{background:var(--lime);border-color:var(--lime);color:#172a20;font-weight:900}.filebtn{position:relative;display:inline-block}.filebtn input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}.state{font-size:11px;color:var(--muted);line-height:1.4;padding-top:8px;min-height:20px}.state[data-state=bad]{color:var(--red)}.state[data-state=ok]{color:var(--lime)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px}.stat{background:var(--panel);border:1px solid var(--stroke);border-radius:12px;padding:13px 12px;min-width:0}.stat strong{display:block;font-size:23px;color:var(--text);line-height:1.3;font-variant-numeric:tabular-nums}.stat label{font-size:10px;color:var(--muted);display:block}.stat small{font-size:10px;color:var(--lime)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;align-items:start}.metric{margin:9px 0}.metric-title{display:flex;justify-content:space-between;gap:8px;color:#e4eeeb;font-size:11px}.metric-title b{font-size:11px}.meter{height:9px;background:#344a4e;border-radius:10px;overflow:hidden;margin-top:6px}.meter>div{height:100%;background:var(--lime);width:0;transition:width .45s}.meter.secondary>div{background:#9ccbe8}.meter.warning>div{background:#dfab79}
+.focus{display:flex;align-items:flex-start;gap:10px;background:#263d38;border:1px solid #527662;border-radius:10px;padding:10px;margin-top:8px}.focus .num{background:var(--lime);border-radius:7px;width:25px;min-width:25px;height:25px;color:#183021;display:grid;place-items:center;font-weight:900;font-size:11px}.focus strong{font-size:12px;display:block}.focus p{font-size:11px;margin:2px 0 6px;color:#d5e2db}.focus a{font-size:11px}.highlight{color:var(--lime);font-weight:750}.warning{color:#f0d3a7}.bad{color:var(--red)}.summary{margin-top:10px;line-height:1.5;color:#dcebe6;font-size:11px}.trend{display:flex;gap:5px;align-items:end;height:105px;margin-top:7px}.trendcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:4px;min-width:0}.trendbar{background:var(--lime);width:80%;max-width:38px;border-radius:4px 4px 0 0;min-height:2px}.trendcol small{color:var(--muted);font-size:10px}.opening-row{display:flex;justify-content:space-between;gap:10px;margin-top:7px;padding:7px 0;border-bottom:1px solid #34494a;font-size:11px}.opening-row .rate{font-weight:850;color:var(--lime);white-space:nowrap}
+.steps{margin-top:10px}.week{border:1px solid var(--stroke);border-radius:10px;margin-top:8px;overflow:hidden}.week-head{font-weight:850;font-size:12px;background:#24373b;padding:8px 10px}.week-body{padding:9px 10px;font-size:11px;color:#d5e8e1}.week-body p{margin:0 0 5px}.task{display:flex;gap:9px;align-items:center;margin:7px 0;font-size:11px}.task input{accent-color:#c8ed8b;width:15px;height:15px}.journal textarea{width:100%;min-height:75px;resize:vertical;padding:9px;border:1px solid var(--stroke);border-radius:9px;background:#102329;color:var(--text);font-size:12px}.journal input{width:100%;padding:8px;border:1px solid var(--stroke);border-radius:9px;background:#102329;color:var(--text);margin:8px 0;font-size:12px}.journal .entry{border:1px solid #436056;background:#243b37;border-radius:9px;padding:9px 10px;margin-top:8px}.entry p{margin:4px 0;color:#dde9e4;overflow-wrap:anywhere}.entry small{color:var(--muted)}.entry a{font-size:10px}.callout{background:#283d3d;border-radius:10px;padding:10px;font-size:11px;margin-top:10px}.sidenote{font-size:10px;color:var(--muted);margin-top:13px}.empty{font-size:12px;color:var(--muted);padding:10px;background:#24363b;border-radius:9px}.revamp{margin-top:12px}
+@media(max-width:680px){.shell{padding:8px 10px 28px}.hero h1{font-size:22px}.hero{align-items:start}.tag{font-size:9px;padding:5px 7px}.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.header{flex-wrap:wrap}.links{gap:5px}.links a{font-size:10px;padding:5px}.card{padding:11px}.stat{padding:11px}.sync{gap:7px}}
+@media(prefers-reduced-motion:reduce){.meter>div{transition:none}}
+</style></head><body><div class="shell">
+<header class="header"><a class="brand" href="./index.html"><span class="mark">♞</span><span>Opening<b>Lab</b></span><span class="by">by Twelvy</span></a><nav class="links"><a href="./opening-academy.html">Opening Academy</a><a href="./coach-v5-1.html">Stockfish Coach</a></nav></header>
+<div class="hero"><div><div class="eyebrow">PHASE 7 · PERSONALIZED TRAINING</div><h1>30-Day Chess Reset</h1><p>Built around <strong>Twelvy0</strong> · Move away from blind requeues. Start measuring improvement.</p></div><span class="tag">Rapid 1458 → 1500+</span></div>
+<section class="card"><div class="eyebrow">YOUR PUBLIC CHESS.COM ACCOUNT</div><div class="sync"><label for="username">Chess.com username</label><input id="username" type="text" value="Twelvy0" autocomplete="off" maxlength="25" spellcheck="false"><button id="syncButton" class="btn primary" type="button">↻ Sync recent games</button><label class="filebtn btn">↑ Import PGN backup<input type="file" id="pgnFile" accept=".pgn,text/plain"></label><a href="https://www.chess.com/member/twelvy0" target="_blank" rel="noopener" style="font-size:11px">Public profile ↗</a></div>
+<div id="syncStatus" class="state" role="status" data-state="neutral">Your screenshot and Muse's 400-game report are reference points. Tap Sync to calculate fresh statistics from Chess.com's public game archives. If the API is blocked, import a downloaded PGN.</div><div class="info" id="coverage">No games have been independently analyzed by this browser yet.</div></section>
+<div class="stats">
+ <div class="stat"><label>Rapid rating</label><strong id="rapidRating">1458</strong><small id="rapidSource">Screenshot · Oct 15</small></div>
+ <div class="stat"><label>Rated games analyzed</label><strong id="gamesAnalyzed">—</strong><small id="gamesSource">Waiting for sync</small></div>
+ <div class="stat"><label>15+10 rapid · last 30d</label><strong id="rapidPlayed">—</strong><small id="rapidTarget">Goal: 20 / 30 days</small></div>
+ <div class="stat"><label>Time-loss share · blitz</label><strong id="blitzFlags">43%</strong><small id="blitzSource">Muse estimate · unverified</small></div>
+</div>
+<div class="grid">
+<section class="card"><div class="eyebrow">WHAT YOUR RESULTS SAY</div><h2>Time control & color breakdown</h2><div id="distribution"><div class="empty">Muse reported 173 bullet, 224 blitz and 2 rapid games in approximately 100 days. Sync to calculate this instead of assuming it remains true.</div></div><div id="sideScores" class="summary">Muse's White score: 0.45; Black score: 0.55 in blitz. This has not been independently verified yet.</div><div id="timeoutNote" class="callout">Muse reported that 70% of bullet losses and 43% of blitz losses were on time. The public game record can confirm timeout results, though not all clock decisions.</div></section>
+<section class="card"><div class="eyebrow">WHERE WE SHOULD TRAIN</div><h2>Personalized opening priorities</h2><div id="focusItems"></div><div class="info" style="margin-top:9px">Training links open actual OpeningLab Academy lessons. Where the sample is small, we prioritize principles rather than interpreting results as proof.</div></section>
+<section class="card"><div class="eyebrow">THE GRIND LOOP</div><h2>Practice quality, not just volume</h2><div id="habits"><div class="empty">Muse reported 26% fast requeues and a 10-game losing streak. Let's calculate the recent pattern from your public games.</div></div><div class="callout"><strong>Stop rule:</strong> Two consecutive losses → 20-minute break. Before starting a new game, review the one decision that lost you the previous game.</div></section>
+<section class="card"><div class="eyebrow">THE 30-DAY TARGET</div><h2>Your measurable scoreboard</h2><div id="targets"><div class="metric"><div class="metric-title">Rapid 15+10 <b>0/20 target</b></div><div class="meter"><div style="width:0"></div></div></div></div><div id="dailyBars"></div><p class="info">A target is a habit, not a promise of rating improvement. Ratings can fluctuate substantially with small samples.</p></section>
+</div>
+<div class="grid revamp">
+<section class="card"><div class="eyebrow">YOUR TRAINING PROGRAM</div><h2>Four weeks, one focused repertoire</h2><div class="steps">
+<div class="week"><div class="week-head">Week 1 · Reset the habits</div><div class="week-body"><p>Five 15+10 rapid games; pause bullet. Review each rapid game for 10 minutes.</p><label class="task"><input type="checkbox" data-task="w1-rapid"> Five serious rapid games</label><label class="task"><input type="checkbox" data-task="w1-london"> London core: d4, Bf4, Nf3, e3, c3</label><label class="task"><input type="checkbox" data-task="w1-review"> Write five post-game review notes</label></div></div>
+<div class="week"><div class="week-head">Week 2 · Repair the repertoire</div><div class="week-body"><p>Five 15+10 rapid games. No bullet for the second week. Study Black's two principal responses.</p><label class="task"><input type="checkbox" data-task="w2-rapid"> Five more rapid games</label><label class="task"><input type="checkbox" data-task="w2-caro"> Caro-Kann against 1.e4</label><label class="task"><input type="checkbox" data-task="w2-qgd"> Queen's Gambit Declined against 1.d4</label></div></div>
+<div class="week"><div class="week-head">Week 3 · Apply the clock rules</div><div class="week-body"><p>Five rapid games; use increment and the checks–captures–threats scan. Bullet only for fun, up to five a day.</p><label class="task"><input type="checkbox" data-task="w3-rapid"> Five rapid games</label><label class="task"><input type="checkbox" data-task="w3-clock"> Record time at moves 15 and 25</label><label class="task"><input type="checkbox" data-task="w3-review"> Correct one recurring mistake</label></div></div>
+<div class="week"><div class="week-head">Week 4 · Measure, don't guess</div><div class="week-body"><p>Five rapid games. Compare opening results, flagged losses and review consistency with the first week.</p><label class="task"><input type="checkbox" data-task="w4-rapid"> Reach 20 reviewed rapid games</label><label class="task"><input type="checkbox" data-task="w4-lines"> First 8 moves and 3 plans for each core defense</label><label class="task"><input type="checkbox" data-task="w4-assess"> Complete the 30-day assessment</label></div></div>
+</div></section>
+<section class="card journal"><div class="eyebrow">AFTER EVERY RAPID GAME</div><h2>Your 10-minute review journal</h2><p class="info">Before asking Stockfish: identify the moment you think the game swung. After checking, write one concrete lesson.</p><label for="gameLink" class="info">Chess.com game link (optional)</label><input id="gameLink" placeholder="https://www.chess.com/game/…"><label for="reflection" class="info">Finish: “I lost/won because… Next time I will…”</label><textarea id="reflection" maxlength="1200" placeholder="Example: I moved my knight and left the queen exposed. Next time I will check forcing captures before committing."></textarea><button id="saveReview" class="btn primary" type="button">Save my review</button><div id="reviewCount" class="info" style="margin-top:9px">0 reviews saved</div><div id="reviewList"></div>
+<div class="callout"><strong>Your clock rules:</strong> In 15+10, aim for 10+ minutes after move 15 and 5+ after move 25. These are training checkpoints, not hard limits. Two consecutive losses mean a real break.</div><p class="sidenote">Personal reflections and checklist progress are saved locally in your browser. They do not upload to Chess.com or a server.</p></section>
+</div>
+<div class="card" style="margin-top:12px"><div class="eyebrow">REFERENCE VS VERIFIED RESULTS</div><h2>What Muse reported — and what OpeningLab can actually measure</h2><p class="info">Muse's report described 400 recent rated games, 173 bullet, 224 blitz, two rapid; 70% of bullet losses and 43% of blitz losses on time; White blitz score 0.45 and Black 0.55. These were provided by you, not independently verified in this session. They add to 399 classified games, not 400, so at least one game's classification would need checking. OpeningLab displays data-derived numbers only after a successful sync or PGN import. Opening names and results require minimum game samples for meaningful recommendations.</p><p class="info">Chess.com publishes public game archives for this purpose. API access can be cached, blocked, or rate-limited; if sync fails, no fabricated results appear. This app is for study **after** games only. Do not use an engine, live advice, or outside assistance during rated online games.</p></div>
+<p class="sidenote">OpeningLab Chess Reset v7.0 · by Twelvy · Uses Chess.com public game archives (read-only) · No password required · Not affiliated with Chess.com. <a href="https://www.chess.com/news/view/published-data-api" target="_blank" rel="noopener">Public API documentation</a></p>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),USER='Twelvy0',KEY='openinglab.reset.v7.';
+let currentUser='Twelvy0',summary=[],rating=null,lastSource='',checkedAt=0,complete=false,fetchBusy=false;
+let reviews=[],checks={};
+try{reviews=JSON.parse(localStorage.getItem(KEY+'reviews')||'[]');checks=JSON.parse(localStorage.getItem(KEY+'checks')||'{}');}catch(e){reviews=[];checks={};}
+function safeStore(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v));}catch(e){}}
+function num(v){return Number.isFinite(v)?String(v):'—'}
+function pct(x){return Number.isFinite(x)?(100*x).toFixed(0)+'%':'—'}
+function timeDate(t){return t?new Date(t*1000).toLocaleDateString():'—'}
+function stamp(ms){return ms?new Date(ms).toLocaleString():'not yet'}
+function status(msg,kind='neutral'){$('syncStatus').textContent=msg;$('syncStatus').dataset.state=kind}
+function deriveEco(g,headers){
+ const h=headers||{};
+ return String(h.ECO||'').match(/\b[A-E][0-9]{2}\b/)?.[0]||String(g.eco||'').match(/\b[A-E][0-9]{2}\b/)?.[0]||'';
+}
+function headersFromPgn(pgn){
+ const h={};for(const m of String(pgn||'').matchAll(/^\[([A-Za-z_]+) "([^"]*)"\]/gm))h[m[1]]=m[2];return h;
+}
+function firstMove(pgn){
+ const movetext=String(pgn||'').replace(/^\[[^\n]*\]\s*$/gm,' ').replace(/\{[^}]*\}/g,' ').replace(/;[^\n]*/g,' ');
+ return movetext.match(/\b1\.\s*(?:\.\.\.\s*)?([a-h][1-8]|[NBRQK][a-h1-8x+#=-]+)\b/)?.[1]||'';
+}
+function getGameClass(control){
+ const str=String(control||'');
+ if(!str||str.includes('/'))return 'unknown';
+ const secs=Number(str.split(/[+|]/)[0]);
+ if(!Number.isFinite(secs))return 'unknown';
+ const inc=Number(str.split(/[+|]/)[1]||0);
+ const effective=secs+40*inc;
+ return effective>=600?'rapid':effective>=180?'blitz':'bullet';
+}
+function summarize(g,user,source='api'){
+ const pgn=g.pgn||'',hdr=headersFromPgn(pgn),white=(g.white?.username||hdr.White||'').toLowerCase(),black=(g.black?.username||hdr.Black||'').toLowerCase(),u=user.toLowerCase();
+ if(white!==u&&black!==u)return null;
+ if(source==='api'&&(g.rated!==true||g.rules!=='chess'))return null;
+ const side=white===u?'white':'black';
+ let outcome='';
+ if(source==='api'){
+  const result=String(g[side]?.result||'').toLowerCase();
+  if(result==='win')outcome='win';
+  else if(['agreed','repetition','stalemate','insufficient','50move','timevsinsufficient','draw'].includes(result))outcome='draw';
+  else if(result)outcome='loss';
+  else return null;
+ }else{
+  const result=hdr.Result||'';
+  outcome=result==='1/2-1/2'?'draw':result==='1-0'?(side==='white'?'win':'loss'):result==='0-1'?(side==='black'?'win':'loss'):'';
+  if(!outcome||hdr.SetUp==='1'||hdr.Variant&&hdr.Variant!=='Standard')return null;
+ }
+ const myResult=source==='api'?String(g[side]?.result||'').toLowerCase():'';
+ const termination=hdr.Termination||'';
+ const timeLoss=outcome==='loss'&&(myResult==='timeout'||(/\btime\b|\bflagged\b/i.test(termination)&&!/\bopponent\b/i.test(termination)));
+ const tc=g.time_control||hdr.TimeControl||'',klass=g.time_class||getGameClass(tc);
+ if(!['rapid','blitz','bullet'].includes(klass))return null;
+ const timestamp=Number(g.end_time||(hdr.UTCDate&&hdr.UTCTime?Date.parse(hdr.UTCDate.replace(/\./g,'-')+'T'+hdr.UTCTime+'Z')/1000:null)||Date.parse((hdr.Date||'').replace(/\./g,'-'))/1000);
+ if(!Number.isFinite(timestamp)||timestamp<=0)return null;
+ const eco=deriveEco(g,hdr);
+ const opening=(hdr.Opening||String(g.eco||'').split('/openings/')[1]||eco||'Unknown opening').replace(/-/g,' ').slice(0,65);
+ const url=String(g.url||hdr.Link||'');
+ return{t:timestamp,side,outcome,timeLoss,klass,tc,eco,opening,first:firstMove(pgn),url};
+}
+function parsePgn(text,user){
+ const splits=String(text).trim().split(/\n\s*\n(?=\[(?:Event|Site|Date|UTCDate|White) ")/);
+ let res=[];
+ for(const part of splits){const hdr=headersFromPgn(part);if(!hdr.White||!hdr.Black)continue;const g=summarize({pgn:part},user,'pgn');if(g)res.push(g);}
+ return res;
+}
+function scoreOf(games){if(!games.length)return NaN;return(games.filter(x=>x.outcome==='win').length+.5*games.filter(x=>x.outcome==='draw').length)/games.length;}
+function shareFlag(games){const losses=games.filter(x=>x.outcome==='loss');return losses.length?losses.filter(x=>x.timeLoss).length/losses.length:NaN;}
+function is1510(g){return g.klass==='rapid'&&/^(900(?:\+|\|)10)$/.test(g.tc);}
+function metric(parent,label,count,total,klass=''){
+ const wrap=document.createElement('div');wrap.className='metric';wrap.innerHTML='<div class="metric-title"><span></span><b></b></div><div class="meter"><div></div></div>';
+ wrap.querySelector('span').textContent=label;wrap.querySelector('b').textContent=(count)+' / '+total;
+ const bar=wrap.querySelector('.meter');if(klass)bar.classList.add(klass);
+ wrap.querySelector('.meter>div').style.width=Math.max(0,Math.min(100,total?100*count/total:0))+'%';parent.append(wrap);
+}
+function classifyOpening(game){
+ const n=game.opening.toLowerCase();
+ const code=game.eco;
+ if(/caro|c4?0[0-2]/.test(n)||/^B1[0-9]$/.test(code))return'Caro-Kann';
+ if(/sicilian/.test(n)||/^B[2-9]\d$/.test(code))return'Sicilian';
+ if(/queen.s gambit accepted/.test(n)||code==='D20')return"Queen's Gambit Accepted";
+ if(/queen.s gambit declined/.test(n)||/^D3[0-9]$/.test(code))return"Queen's Gambit Declined";
+ if(/london/.test(n))return'London System';
+ if(/italian|giuoco|two knights/.test(n))return'Italian Game';
+ if(/spanish|ruy lopez/.test(n))return'Ruy Lopez';
+ if(/french/.test(n)||/^C0[0-9]$/.test(code))return'French Defense';
+ return game.opening||'Unknown';
+}
+function showFocus(games,live){
+ const root=$('focusItems');root.replaceChildren();
+ const selections=[
+ {title:'As White: London System',text:'Replace scattered 1.e4 experiments with a repeatable 1.d4 setup. Learn your first eight moves and central plans.',id:'london-classic'},
+ {title:'As Black vs 1.e4: Caro-Kann',text:'Build a solid ...c6 and ...d5 center; practice the Advance and Classical variations.',id:'caro-classic'},
+ {title:"As Black vs 1.d4: Queen's Gambit Declined",text:'Continue 1...d5 but practice declining the gambit with ...e6, developing before pawn grabs.',id:'qgd-black'}
+ ];
+ for(let i=0;i<selections.length;i++){
+  const x=selections[i],node=document.createElement('div');node.className='focus';
+  const num=document.createElement('span');num.className='num';num.textContent=i+1;
+  const right=document.createElement('div'),title=document.createElement('strong');title.textContent=x.title;
+  const description=document.createElement('p');description.textContent=x.text;
+  const link=document.createElement('a');link.href='./opening-academy.html?lesson='+encodeURIComponent(x.id);link.textContent='Practice this opening →';
+  right.append(title,description,link);node.append(num,right);root.append(node);
+ }
+ if(live){
+  const white=games.filter(g=>g.klass==='blitz'&&g.side==='white');
+  const black=games.filter(g=>g.klass==='blitz'&&g.side==='black');
+  if(white.length>=10&&black.length>=10){
+   const note=document.createElement('div');note.className='summary';
+   note.textContent='Recent blitz: White '+pct(scoreOf(white))+' over '+white.length+' games; Black '+pct(scoreOf(black))+' over '+black.length+'. These observed scores support tailoring your training, not assuming a cause.';
+   root.append(note);
+  }
+ }
+}
+function showSnapshot(){
+ $('gamesAnalyzed').textContent='—';$('gamesSource').textContent='Waiting for sync';
+ $('rapidPlayed').textContent='—';$('rapidSource').textContent='Screenshot · Oct 15';$('rapidRating').textContent='1458';$('blitzFlags').textContent='43%';$('blitzSource').textContent='Muse estimate · unverified';
+ showFocus([],false);
+}
+function update(games,kind='api'){
+ const now=Date.now()/1000,cut=now-100*86400,last30=now-30*86400;
+ const recent=games.filter(g=>g.t>=cut).sort((a,b)=>b.t-a.t).slice(0,400);
+ const isLive=kind==='api';
+ summary=recent;lastSource=kind;
+ $('gamesAnalyzed').textContent=num(recent.length);$('gamesSource').textContent=(kind==='api'?'Public API':'Imported PGN')+' · last 100 days';
+ const rapid30=recent.filter(g=>g.t>=last30&&is1510(g));
+ $('rapidPlayed').textContent=rapid30.length;
+ const blitz=recent.filter(g=>g.klass==='blitz');
+ const flag=shareFlag(blitz);
+ $('blitzFlags').textContent=pct(flag);$('blitzSource').textContent='From '+blitz.filter(g=>g.outcome==='loss').length+' blitz losses';
+ const controls=$('distribution');controls.replaceChildren();
+ if(!recent.length){controls.innerHTML='<div class="empty">No qualifying rated standard games found in this period. Check the username or imported PGN.</div>';}
+ else{
+  const n=recent.length;
+  for(const tc of ['bullet','blitz','rapid'])metric(controls,tc[0].toUpperCase()+tc.slice(1),recent.filter(g=>g.klass===tc).length,n,tc==='blitz'?'secondary':'');
+ }
+ const w=recent.filter(g=>g.klass==='blitz'&&g.side==='white'),b=recent.filter(g=>g.klass==='blitz'&&g.side==='black');
+ $('sideScores').textContent='Blitz score (win = 1, draw = ½): White '+pct(scoreOf(w))+' ('+w.length+' games), Black '+pct(scoreOf(b))+' ('+b.length+' games).';
+ const bullet=recent.filter(g=>g.klass==='bullet');
+ $('timeoutNote').textContent='Losses on time: Bullet '+pct(shareFlag(bullet))+' of '+bullet.filter(g=>g.outcome==='loss').length+' losses; Blitz '+pct(flag)+' of '+blitz.filter(g=>g.outcome==='loss').length+' losses.';
+ const chronological=[...recent].sort((a,b)=>a.t-b.t);let rapidRequeue=0,maxLoss=0,curLoss=0;
+ for(let i=0;i<chronological.length;i++){
+  if(i&&chronological[i].t-chronological[i-1].t>=0&&chronological[i].t-chronological[i-1].t<=360)rapidRequeue++;
+  curLoss=chronological[i].outcome==='loss'?curLoss+1:0;maxLoss=Math.max(maxLoss,curLoss);
+ }
+ const habits=$('habits');habits.replaceChildren();metric(habits,'Requeued within 6 minutes',rapidRequeue,Math.max(1,chronological.length-1),'warning');
+ const text=document.createElement('p');text.className='summary';text.textContent='Longest observed losing streak: '+maxLoss+'. Fast requeues: '+rapidRequeue+' of '+Math.max(0,chronological.length-1)+' consecutive-game gaps. This is not a measure of decision quality by itself.';habits.append(text);
+ const target=$('targets');target.replaceChildren();
+ metric(target,'15+10 rapid games in last 30 days',rapid30.length,20);
+ const wscore=scoreOf(w);metric(target,'Blitz as White · 50% score goal',Number.isFinite(wscore)?Math.round(wscore*100):0,50);
+ const rateLoss=shareFlag(blitz);metric(target,'Blitz losses NOT on time · 75% target',Number.isFinite(rateLoss)?Math.round((1-rateLoss)*100):0,75);
+ const reviewsInMonth=reviews.filter(r=>r.when>=Date.now()-30*86400*1000).length;metric(target,'Post-game review notes · 20 goal',reviewsInMonth,20);
+ const openings=new Map();for(const g of recent.filter(g=>g.side==='white'&&g.klass==='blitz')){const k=classifyOpening(g);const prev=openings.get(k)||[];prev.push(g);openings.set(k,prev);}
+ const sorted=[...openings].filter(([_,gs])=>gs.length>=5).sort((a,b)=>scoreOf(a[1])-scoreOf(b[1]));
+ const zone=document.createElement('div');zone.style.marginTop='10px';const title=document.createElement('div');title.className='eyebrow';title.textContent='YOUR WEAKEST WHITE LINES (MIN. 5 GAMES)';zone.append(title);
+ if(!sorted.length){const note=document.createElement('p');note.className='info';note.textContent='Not enough games with recognizable opening labels to rank specific White openings reliably.';zone.append(note);}
+ else for(const [name,gs] of sorted.slice(0,4)){const row=document.createElement('div');row.className='opening-row';const left=document.createElement('span');left.textContent=name+' ('+gs.length+')';const right=document.createElement('span');right.className='rate';right.textContent=pct(scoreOf(gs));row.append(left,right);zone.append(row);}
+ $('distribution').append(zone);
+ showFocus(recent,true);
+ const daily=$('dailyBars');daily.replaceChildren();const h=document.createElement('h3');h.style.marginTop='14px';h.textContent='Rapid games · last 7 days';daily.append(h);
+ const chart=document.createElement('div');chart.className='trend';const start=new Date();start.setHours(0,0,0,0);
+ const vals=[];for(let delta=6;delta>=0;delta--){const t=start.getTime()/1000-delta*86400;vals.push({count:recent.filter(g=>g.klass==='rapid'&&g.t>=t&&g.t<t+86400).length,day:new Date(t*1000).toLocaleDateString(undefined,{weekday:'short'})});}
+ const maximum=Math.max(1,...vals.map(x=>x.count));
+ for(const d of vals){const col=document.createElement('div');col.className='trendcol';const bar=document.createElement('div');bar.className='trendbar';bar.style.height=(Math.max(3,80*d.count/maximum))+'px';bar.title=d.count+' rapid games';const val=document.createElement('small');val.textContent=d.count;const label=document.createElement('small');label.textContent=d.day;col.append(val,bar,label);chart.append(col);}daily.append(chart);
+ $('coverage').textContent='Showing '+recent.length+' latest qualifying rated standard games from the past 100 days. Source: '+(kind==='api'?'Chess.com public archives':'PGN upload')+'. Latest included game: '+timeDate(recent[0]?.t)+'.';
+}
+function parseStats(stats){const r=stats?.chess_rapid?.last?.rating;if(Number.isFinite(r)){$('rapidRating').textContent=r;$('rapidSource').textContent='Chess.com API · current published';}}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function getJson(url,limit=14000){
+ const abort=new AbortController();const id=setTimeout(()=>abort.abort(),limit);
+ try{const response=await fetch(url,{mode:'cors',credentials:'omit',signal:abort.signal,headers:{Accept:'application/json'}});
+  if(!response.ok)throw Error('Chess.com API HTTP '+response.status+' ('+new URL(url).pathname+')');
+  return await response.json();
+ }finally{clearTimeout(id);}
+}
+async function sync(){
+ if(fetchBusy)return;const username=$('username').value.trim();
+ if(!/^[A-Za-z0-9_-]{3,25}$/.test(username)){status('Enter a valid Chess.com username (letters, numbers, hyphens and underscores).','bad');return;}
+ fetchBusy=true;currentUser=username;$('syncButton').disabled=true;status('Connecting to Chess.com public archives…');
+ const base='https://api.chess.com/pub/player/'+encodeURIComponent(username.toLowerCase());
+ let partial=[],failures=[],archives=[];
+ try{
+  const [index,stats]=await Promise.allSettled([getJson(base+'/games/archives'),getJson(base+'/stats')]);
+  if(index.status!=='fulfilled')throw Error('Archive list could not load: '+String(index.reason?.message||index.reason));
+  if(stats.status==='fulfilled')parseStats(stats.value);
+  archives=(index.value.archives||[]).filter(x=>/^https:\/\/api\.chess\.com\/pub\/player\/[^/]+\/games\/\d{4}\/\d{2}$/.test(x));
+  const recentCut=Date.now()/1000-100*86400;
+  let months=archives.filter(url=>{
+    const m=url.match(/\/(\d{4})\/(\d{2})$/);const end=new Date(Date.UTC(+m[1],+m[2],1)).getTime()/1000;return end>=recentCut-86400*30;
+  }).reverse().slice(0,8);
+  for(let i=0;i<months.length;i++){
+   const url=months[i];status('Downloading public games: '+(i+1)+' of '+months.length+' recent months…');
+   try{const doc=await getJson(url,17000);
+    const games=(doc.games||[]).map(g=>summarize(g,username)).filter(Boolean);
+    partial.push(...games);
+   }catch(e){failures.push(url.split('/').slice(-2).join('/')+': '+(e?.message||'error'));}
+   await sleep(200);
+  }
+  if(!partial.length)throw Error('No qualifying games could be loaded. '+failures.join(' | '));
+  const unique=new Map();for(const g of partial){unique.set(g.url||g.t+'-'+g.side+'-'+g.tc,g);}
+  partial=[...unique.values()].sort((a,b)=>b.t-a.t).slice(0,400);
+  checkedAt=Date.now();complete=failures.length===0;lastSource='api';
+  update(partial,'api');safeStore('cache',{user:username,games:partial,rating:$('rapidRating').textContent,date:checkedAt,complete});
+  status('Updated from public Chess.com games · '+new Date(checkedAt).toLocaleTimeString()+(failures.length?' · Some months failed: '+failures.join(', '):''),failures.length?'neutral':'ok');
+  if(failures.length)$('coverage').textContent+=' Incomplete archive coverage: '+failures.join(', ');
+ }catch(e){
+  status('Live sync did not finish: '+String(e.message||e)+'. Try again, or import your downloaded Chess.com PGN instead. Previous data is preserved.','bad');
+ }finally{fetchBusy=false;$('syncButton').disabled=false;}
+}
+$('syncButton').addEventListener('click',sync);
+$('pgnFile').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ if(file.size>18*1024*1024){status('PGN file is larger than 18 MB. Please export a shorter period.','bad');return;}
+ try{const text=await file.text();const games=parsePgn(text,$('username').value.trim());
+  if(!games.length)throw Error('No matching completed standard games for this username.');
+  const recent=games.sort((a,b)=>b.t-a.t).slice(0,400);
+  update(recent,'pgn');lastSource='pgn';checkedAt=Date.now();safeStore('cache',{user:$('username').value.trim(),games:recent,rating:$('rapidRating').textContent,date:checkedAt,complete:false});
+  status('Loaded '+games.length+' games from the PGN file (up to 400 recent games shown). No Chess.com sync needed.','ok');
+ }catch(err){status('Could not read this PGN: '+String(err?.message||err),'bad');}
+ e.target.value='';
+});
+function renderReviews(){
+ $('reviewCount').textContent=reviews.length+' notes saved locally';
+ const out=$('reviewList');out.replaceChildren();
+ for(const r of reviews.slice(0,4)){
+  const div=document.createElement('div');div.className='entry';const date=document.createElement('small');date.textContent=new Date(r.when).toLocaleString();const p=document.createElement('p');p.textContent=r.text;div.append(date,p);
+  if(/^https:\/\/(?:www\.)?chess\.com\/game\//.test(r.link)){const a=document.createElement('a');a.href=r.link;a.target='_blank';a.rel='noopener';a.textContent='Review game ↗';div.append(a);}
+  out.append(div);
+ }
+}
+$('saveReview').addEventListener('click',()=>{
+ const text=$('reflection').value.trim(),link=$('gameLink').value.trim();
+ if(text.length<12){status('Write a real takeaway of at least 12 characters before saving.','bad');return;}
+ reviews.unshift({text:text.slice(0,1200),link:link.slice(0,450),when:Date.now()});reviews=reviews.slice(0,100);safeStore('reviews',reviews);
+ $('reflection').value='';$('gameLink').value='';renderReviews();status('Review saved on this device. Keep building the habit!','ok');
+ if(summary.length)update(summary,lastSource);
+});
+document.querySelectorAll('[data-task]').forEach(e=>{e.checked=!!checks[e.dataset.task];e.addEventListener('change',()=>{checks[e.dataset.task]=e.checked;safeStore('checks',checks);});});
+renderReviews();showSnapshot();
+try{const cached=JSON.parse(localStorage.getItem(KEY+'cache')||'null');if(cached?.games?.length&&cached.user?.toLowerCase()==='twelvy0'){currentUser=cached.user;checkedAt=cached.date;complete=cached.complete;update(cached.games,'api');$('rapidRating').textContent=cached.rating||'1458';$('rapidSource').textContent='Last public API sync';status('Showing previously fetched games · '+stamp(cached.date)+'. Tap Sync to refresh.','ok');}}catch(e){}
+</script></body></html>
