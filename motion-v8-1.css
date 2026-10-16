@@ -1,0 +1,125 @@
+/* OpeningLab by Twelvy — Motion & Readability v8.1
+   Shared progressive enhancement for all five modules.
+   Fonts stay legible, explanations remain available, and reduced motion is respected. */
+:root{--ol-ease:cubic-bezier(.2,.75,.23,1);--ol-mint:#c8ed8b}
+body.ol-v9{font-size:15px!important;line-height:1.54!important;
+  background-image:radial-gradient(ellipse 900px 600px at 4% -8%,rgba(128,183,119,.085),transparent 72%),radial-gradient(ellipse 780px 650px at 100% 65%,rgba(105,163,183,.045),transparent 75%);
+  background-attachment:fixed}
+body.ol-v9 :is(h1,h2,h3){letter-spacing:-.015em;line-height:1.24}
+body.ol-v9 :is(.brand,.twelvy,.brand-credit){letter-spacing:normal}
+body.ol-v9 :is(.story-copy,.story p,.feedback p,.chat-msg p,.coach-response,
+ #whiteText,#blackText,#yourText,#oppText,#wrongText,#answerText,#coachText,
+ #coachReply,#personal,#question,.question,.focus,.callout,.info,.summary,.week-body,
+ .story-event .story-copy,.lesson-box .instruction,.coach-inner .bubble,
+ .coach-card p,.coach-bubble,.message-body,.review-bucket p){
+  font-size:14.5px!important;line-height:1.58!important;letter-spacing:.005em}
+body.ol-v9 :is(.story-title,.story strong,.feedback strong,.story-event strong,
+ #whiteTitle,#blackTitle,#yourTitle,#oppTitle,#wrongTitle,#answerHeading,
+ #coachHeading,#taskTitle,#questionTitle){
+  font-size:15px!important;line-height:1.38!important}
+body.ol-v9 :is(.eyebrow,.story-label,.story .speaker,.feedback>span,
+ .feed-label,.panel-label){font-size:11px!important;letter-spacing:.065em}
+body.ol-v9 :is(.muted,.legend,.info-foot,.fineprint,.footnote,.catalog-foot,
+ .notice,.libraryfoot,.info,.hintrow label,.stat label,.stat small,
+ .lesson-body small,.lesson .course-sub,.coach-sub,.summary,.status){
+  line-height:1.5}
+body.ol-v9 :is(.card,.story,.feedback,.story-event,.move-feedback,.coach-card,
+ .progress-wrap,.stat,.dash-item,.metric,.coach-response){
+  box-shadow:0 8px 24px rgba(0,0,0,.09);
+  transition:transform .22s var(--ol-ease),border-color .22s,box-shadow .22s,background-color .2s}
+body.ol-v9 :is(.card,.story,.feedback,.story-event,.move-feedback,.coach-card){
+  border-radius:max(12px, min(17px, 1.1rem))}
+body.ol-v9 :is(button,.btn,a.engine-link,.links a){
+  transition:transform .17s var(--ol-ease),background-color .17s,border-color .17s,box-shadow .17s}
+@media (hover:hover) and (pointer:fine){
+  body.ol-v9 :is(.card,.story,.feedback,.story-event,.move-feedback):hover{border-color:rgba(173,215,167,.56)}
+  body.ol-v9 :is(button:not(:disabled),a.engine-link,.links a):hover{transform:translateY(-2px)}
+}
+body.ol-v9 :is(button,.btn){touch-action:manipulation}
+body.ol-v9 :is(.toolbar button,.board-buttons button,.action-row button,
+ .coach-buttons button,.slim-controls button,.quick-prompts button,
+ .tabs button,.mode-bar button,.mode-tabs button,.btn,.primary){
+  min-height:38px;font-size:12.5px!important;line-height:1.35}
+body.ol-v9 :is(.story,.feedback,.story-event){padding:12px 13px}
+body.ol-v9 .quick-feedback{font-size:14px!important;line-height:1.4}
+body.ol-v9 .board{box-shadow:0 12px 36px rgba(0,0,0,.2)}
+body.ol-v9 :is(.progress-fill,.progress-rail>div,.progress-rail div,.progress-track>div,.meter>div){
+  transition:width .75s var(--ol-ease)!important}
+body.ol-v9 :is(.story,.feedback,.story-event,.card,.metric,.stat,.dash-item){
+  animation:ol-enter .44s var(--ol-ease) both}
+@keyframes ol-enter{from{opacity:.68;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ol-feedback{0%{transform:translateY(5px);filter:brightness(1.16)}100%{transform:translateY(0);filter:brightness(1)}}
+body.ol-v9 .ol-fresh{animation:ol-feedback .42s var(--ol-ease)!important}
+@keyframes ol-jump{0%{transform:translateY(-10px) scale(.9)}65%{transform:translateY(2px) scale(1.08)}100%{transform:translateY(0) scale(1)}}
+body.ol-v9 .ol-piece-jump{animation:ol-jump .32s var(--ol-ease)!important}
+@keyframes ol-achievement{0%{transform:translate(-50%,-4px) scale(.8);opacity:0}18%{transform:translate(-50%,-16px) scale(1.04);opacity:1}78%{opacity:1}100%{transform:translate(-50%,-65px) scale(1);opacity:0}}
+.ol-success-pop{pointer-events:none;position:fixed;z-index:150;top:43%;left:50%;transform:translate(-50%,0);
+  font-weight:950;font-size:16px;border:1px solid #d9f6ac;padding:12px 18px;border-radius:28px;color:#152a1d;
+  background:#c8ed8b;box-shadow:0 11px 36px #0007;letter-spacing:.02em;
+  animation:ol-achievement 1.2s var(--ol-ease) forwards}
+.ol-success-pop::after{content:"✦  ✦";position:absolute;right:-36px;top:-19px;font-size:22px;color:#e0efaa;text-shadow:0 2px 6px #0005}
+body.ol-v9 .ol-collapsible{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+body.ol-v9 .ol-collapsible.ol-open{display:block!important;-webkit-line-clamp:unset;line-clamp:unset;overflow:visible}
+body.ol-v9 .ol-read-more{
+  display:inline-flex;align-items:center;gap:4px;margin-top:5px;padding:5px 2px;
+  min-height:30px;color:#c8ed8b!important;border:0!important;background:transparent!important;
+  font-weight:800;font-size:12px!important;letter-spacing:.01em;text-align:left}
+body.ol-v9 .ol-read-more:after{content:"⌄";font-size:16px;display:inline-block;line-height:1;transition:transform .2s}
+body.ol-v9 .ol-read-more[aria-expanded=true]:after{transform:rotate(180deg)}
+body.ol-v9 .ol-read-more:hover{text-decoration:underline}
+.ol-view-bar{display:flex;align-items:center;justify-content:flex-end;gap:9px;padding:8px 0 10px;
+  border-bottom:1px solid rgba(160,191,174,.12);margin-bottom:9px;flex-wrap:wrap}
+.ol-view-tag{font-size:11px;font-weight:700;letter-spacing:.04em;color:#c3e29f;margin-right:auto}
+.ol-view-controls{display:flex;gap:6px;align-items:center}
+.ol-view-controls button{
+  font-size:12px!important;min-height:32px!important;display:flex;gap:5px;align-items:center;
+  background:#243b3b;color:#deeae3;border:1px solid #557166;padding:6px 10px;border-radius:18px;
+  font-weight:700;line-height:1.2;white-space:nowrap}
+.ol-view-controls button[aria-pressed=true]{background:#cee9a2;color:#16291c;border-color:#d6e9b8}
+.ol-view-controls button:focus-visible{outline:3px solid #c8ed8b}
+body.ol-v9.ol-large-text{font-size:17px!important}
+body.ol-v9.ol-large-text :is(.story-copy,.story p,.feedback p,.chat-msg p,.coach-response,
+ #whiteText,#blackText,#yourText,#oppText,#wrongText,#answerText,#coachText,
+ #coachReply,#personal,#question,.question,.focus,.callout,.info,.summary,.week-body,
+ .story-event .story-copy,.lesson-box .instruction,.coach-card p,.coach-inner .bubble){
+ font-size:16.5px!important;line-height:1.65!important}
+body.ol-v9.ol-large-text :is(.story-title,.feedback strong,.story strong,.story-event strong,
+ #whiteTitle,#blackTitle,#yourTitle,#oppTitle,#wrongTitle,#answerHeading,#coachHeading){font-size:17px!important}
+body.ol-v9.ol-large-text :is(.toolbar button,.board-buttons button,.action-row button,
+ .coach-buttons button,.slim-controls button,.quick-prompts button,.tabs button,
+ .mode-bar button,.mode-tabs button,.btn,.primary){font-size:14px!important}
+body.ol-v9 .ol-week-details{border:1px solid #425c58;border-radius:11px;overflow:hidden;margin-top:8px;
+ background:#1e3136}
+body.ol-v9 .ol-week-details summary{cursor:pointer;list-style:none;position:relative;
+ padding:11px 36px 11px 13px;font-size:14px;font-weight:850;background:#273e3e;
+ display:block}
+body.ol-v9 .ol-week-details summary::-webkit-details-marker{display:none}
+body.ol-v9 .ol-week-details summary:after{content:"+";position:absolute;right:14px;top:50%;transform:translateY(-50%);
+ font-size:20px;color:#c8ed8b;font-weight:600}
+body.ol-v9 .ol-week-details[open] summary:after{content:"−"}
+body.ol-v9 .ol-week-details .week-body{padding:12px 13px;animation:ol-enter .28s ease-out}
+body.ol-v9 .ol-week-details .week-body p{font-size:14px!important;line-height:1.6}
+body.ol-v9 .ol-week-details .task{font-size:14px!important;line-height:1.5;gap:11px;margin:10px 0}
+body.ol-v9 .ol-week-details .task input{width:18px;height:18px;flex-shrink:0}
+body.ol-v9 :is(.week,.stat,.dash-item,.metric,.focus,.ol-week-details){border-color:#506865}
+@media(max-width:720px){
+ body.ol-v9{font-size:15px!important}
+ .ol-view-bar{padding:5px 0 9px;margin-bottom:7px}
+ .ol-view-tag{font-size:10px}
+ .ol-view-controls button{min-height:34px;padding:7px 9px}
+ body.ol-v9 :is(.story-copy,.story p,.feedback p,.chat-msg p,.coach-response,
+ #whiteText,#blackText,#yourText,#oppText,#wrongText,#answerText,#coachText,
+ #coachReply,#personal,#question,.question,.focus,.callout,.info,.summary){
+ font-size:14.5px!important;line-height:1.58!important}
+ body.ol-v9.ol-large-text :is(.story-copy,.story p,.feedback p,.chat-msg p,
+ #whiteText,#blackText,#yourText,#oppText,#wrongText,#answerText,#coachText,
+ #coachReply,#personal,#question,.question,.focus,.callout,.info,.summary){font-size:16px!important}
+ body.ol-v9 :is(.toolbar button,.board-buttons button,.action-row button,
+ .coach-buttons button,.slim-controls button,.tabs button,.mode-bar button){min-height:40px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+html.ol-no-motion *,html.ol-no-motion *::before,html.ol-no-motion *::after{
+ animation:none!important;transition:none!important;scroll-behavior:auto!important}
