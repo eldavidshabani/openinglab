@@ -1,0 +1,231 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101a20"><title>OpeningLab Training Center · by Twelvy</title><style>
+:root{--bg:#101a20;--panel:#192a30;--panel2:#22343a;--stroke:#3c5253;--lime:#c8ed8b;--text:#eff6ec;--muted:#aac3bf;--dark:#869d89;--light:#e8e9d3;--blue:#b4d9ef;--red:#f5b5a7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--lime);outline-offset:3px}a{color:var(--lime)}
+.shell{max-width:1230px;margin:auto;padding:9px 14px 26px}.header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--stroke);padding:5px 0 10px}.brand{font-size:18px;font-weight:900;display:flex;gap:7px;align-items:center;text-decoration:none;color:var(--text)}.brand b{color:var(--lime)}.mark{display:grid;place-items:center;background:var(--lime);color:#11221b;border-radius:9px;width:30px;height:30px;font-size:20px}.twelvy{color:var(--lime);font-size:10px;font-weight:700}.header-right{display:flex;align-items:center;gap:10px;font-size:11px}.header-right a{text-decoration:none;border:1px solid var(--stroke);padding:7px 9px;border-radius:8px}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:9px 0 12px}.eyebrow{color:var(--lime);font-size:10px;font-weight:900;letter-spacing:.08em}.hero h1{font-size:22px;margin:2px 0}.hero p{color:var(--muted);margin:2px 0;font-size:11px}.hero-stat{font-size:12px;color:var(--muted);text-align:right}.hero-stat strong{font-size:21px;color:var(--lime)}
+.layout{display:grid;grid-template-columns:213px minmax(330px,410px) minmax(272px,370px);gap:12px;align-items:start;justify-content:center}
+.card{background:var(--panel);border:1px solid var(--stroke);border-radius:15px;padding:12px;min-width:0}.catalog{padding:10px}.search{background:#102227;color:var(--text);width:100%;padding:8px;border:1px solid var(--stroke);border-radius:8px;margin:8px 0}.search::placeholder{color:var(--muted)}.filters{display:flex;gap:4px;margin-bottom:8px}.filters button{flex:1;background:#263b3b;color:#d4e5d7;border:1px solid var(--stroke);border-radius:7px;padding:5px 2px;font-size:10px}.filters button.active{background:var(--lime);color:#12291a;font-weight:800}
+.opening-list{max-height:71vh;overflow:auto;overscroll-behavior:contain}.family-label{font-size:9px;letter-spacing:.07em;color:var(--muted);font-weight:800;padding:10px 5px 3px}.lesson{display:flex;align-items:center;gap:7px;text-align:left;border:1px solid transparent;background:transparent;width:100%;border-radius:9px;padding:7px 5px;color:var(--text);margin:2px 0}.lesson:hover{background:#2c4547}.lesson.active{background:#314c40;border-color:#6b9169}.lesson-index{border:1px solid #4e6a5c;border-radius:8px;min-width:26px;height:27px;display:grid;place-items:center;color:var(--lime);font-weight:800;font-size:10px}.lesson-body{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}.lesson-body strong{font-size:11px}.lesson-body small{font-size:10px;color:var(--muted)}.check{color:var(--lime);font-weight:900}.catalog-foot{font-size:10px;color:var(--muted);border-top:1px solid var(--stroke);margin-top:9px;padding-top:8px}
+.board-title{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:7px}.board-title h2{margin:3px 0;font-size:19px;line-height:1.1}.board-title p{font-size:11px;color:var(--muted);margin:2px 0}.side-tag{color:var(--lime);font-size:10px;border:1px solid #5d795b;border-radius:14px;padding:5px 7px;white-space:nowrap}
+.mode-bar{display:flex;gap:4px;padding:4px;background:#22363b;border-radius:10px;margin-bottom:7px}.mode-bar button{flex:1;border:0;background:transparent;color:#c4d4d6;border-radius:7px;padding:7px 5px;font-size:11px;font-weight:750}.mode-bar button.active{background:var(--lime);color:#172a1b}
+.board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));aspect-ratio:1/1;width:100%;border:5px solid #335148;border-radius:11px;overflow:hidden}.square{border:0;padding:0;aspect-ratio:1/1;display:grid;place-items:center;position:relative;font-size:clamp(26px,3vw,42px);text-shadow:0 1px 1px #0006;line-height:1}.square.light{background:var(--light)}.square.dark{background:var(--dark)}.square.selected{background:#c2ce72}.square.move{box-shadow:inset 0 0 0 100px #e0ce4a47}.square.hint{box-shadow:inset 0 0 0 4px #e7c364}.square.target::after{content:"";position:absolute;width:21%;height:21%;border-radius:99px;background:#2f704a8f;pointer-events:none}.square .piece{position:relative;z-index:2}.coord{position:absolute;bottom:1px;left:2px;font:800 9px system-ui;z-index:3;color:#43624a;text-shadow:none}.dark .coord{color:#ecf1d6}
+.toolbar{display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap}.toolbar button,.action-row button,.coach-buttons button{color:var(--text);background:#25383c;border:1px solid #536c65;padding:7px 9px;border-radius:8px;font-size:11px}.toolbar .spacer{flex:1}.moves{font-size:11px;min-height:18px;margin-top:5px;color:var(--muted);max-height:38px;overflow:auto}.mini-feedback{display:none}
+.story{background:#254033;border:1px solid #678a6a;border-radius:10px;padding:10px;margin:7px 0}.story[data-kind=opp]{background:#243943;border-color:#62879a}.story[data-kind=wrong]{background:#472f30;border-color:#bc7065}.story[data-kind=hint]{background:#443b29;border-color:#bea66a}.story .speaker{font-size:9px;color:var(--lime);letter-spacing:.07em;font-weight:850}.story[data-kind=opp] .speaker{color:var(--blue)}.story[data-kind=wrong] .speaker{color:var(--red)}.story strong{display:block;margin:3px 0;font-size:14px}.story p{margin:3px 0;color:#e1ece4;line-height:1.4;font-size:11px}
+.practice-head{display:flex;justify-content:space-between;gap:9px;align-items:center}.practice-head h3{font-size:16px;margin:6px 0}.step{font-size:10px;color:var(--lime);font-weight:850}.muted{color:var(--muted);font-size:11px}.focus{border-radius:9px;background:#28413a;padding:9px;margin:8px 0;font-size:11px}.action-row{display:flex;gap:6px;margin-top:7px}.action-row button{flex:1}.action-row .primary,.primary{background:var(--lime)!important;color:#1a2a20!important;border-color:var(--lime)!important;font-weight:900!important}.action-row button:disabled{opacity:.5}
+.tabbar{display:flex;justify-content:space-between;gap:5px;align-items:center}.tabbar h3{font-size:14px;margin:2px 0}.panel-label{font-weight:900;letter-spacing:.08em;color:var(--lime);font-size:10px}.coach-buttons{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.coach-buttons button{font-size:10px;padding:6px 7px}.coach-response{min-height:30px;margin-top:8px;padding:9px;border-radius:8px;background:#273f40;color:#e6efe9;font-size:11px}.progress-wrap{margin-top:8px;border:1px solid var(--stroke);padding:10px;border-radius:11px;font-size:11px}.progress-rail{height:6px;background:#34484b;border-radius:9px;margin-top:6px;overflow:hidden}.progress-rail div{height:100%;background:var(--lime);width:0;transition:width .4s}.next{margin-top:8px;width:100%;padding:9px!important}
+.enter{animation:appear .36s ease-out both}@keyframes appear{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}[hidden]{display:none!important}
+.info-foot{font-size:10px;color:var(--muted);margin-top:13px;line-height:1.5;text-align:center}
+@media(max-width:1100px) and (min-width:721px){.layout{grid-template-columns:minmax(330px,410px) minmax(260px,370px)}.catalog{grid-column:1/-1}.opening-list{max-height:none;display:flex;gap:5px;overflow-x:auto}.family-label{display:none}.lesson{flex:0 0 166px}.catalog-foot{display:none}.filters{max-width:320px}.catalog .eyebrow{display:none}.catalog .search{max-width:320px;margin:3px 0 8px}}
+@media(max-width:720px){.shell{padding:7px 9px 24px}.layout{display:flex;flex-direction:column;gap:8px}.layout>section,.layout>aside{width:100%}.card{padding:9px}.header-right{gap:5px}.header-right a{font-size:10px;padding:5px}.brand{font-size:16px}.hero h1{font-size:20px}.hero-stat strong{font-size:17px}.catalog .eyebrow{display:none}.catalog .search{margin:3px 0 6px}.opening-list{display:flex;overflow-x:auto;max-height:none;gap:4px}.family-label{display:none}.lesson{flex:0 0 157px}.catalog-foot{display:none}.filters button{padding:4px}.board{max-width:390px;margin:auto}.square{font-size:clamp(25px,8vw,42px)}.mini-feedback{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:7px 9px;background:#274134;border:1px solid #668c66;border-radius:9px;font-size:11px;margin-bottom:6px}.mini-feedback strong{min-width:29%}.mini-feedback span{flex:1;line-height:1.3}.toolbar{margin-top:5px}.story p{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.enter{animation:none}.progress-rail div{transition:none}}
+
+
+body{font-size:13px}.shell{max-width:1220px}.header-right{flex-wrap:wrap}
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:10px 0}.dash-item{background:#192a30;border:1px solid #3c5253;border-radius:12px;padding:10px}.dash-item strong{display:block;font-size:23px}.dash-item span{font-size:10px;color:#adc4bd}
+.tabs{display:flex;gap:7px;margin:11px 0}.tabs button{border:1px solid #547267;background:#263b3f;color:#eff6ec;border-radius:9px;padding:8px 12px;font-weight:800;font-size:12px}.tabs button.active{background:#c8ed8b;color:#182c20}
+.lab-layout{display:grid;grid-template-columns:205px minmax(320px,410px) minmax(275px,385px);align-items:start;gap:12px;justify-content:center}.lab-list{max-height:75vh;overflow-y:auto}.lab-list button{display:block;width:100%;text-align:left;border:1px solid transparent;border-radius:9px;background:transparent;color:#f1f6e9;padding:8px;margin:2px 0;font-size:11px}.lab-list button.selected{background:#314c40;border-color:#81a074}.lab-list button small{display:block;color:#adc4bd;font-size:10px}.lab-list button .check{float:right}
+.board{border:5px solid #335148}.sq{padding:0;border:0;aspect-ratio:1;display:grid;place-items:center;position:relative;font-size:clamp(27px,3vw,43px);text-shadow:0 1px 2px #0006;line-height:1}.sq.light{background:#e8e9d3}.sq.dark{background:#869d89}.sq.selected{background:#c2ce72}.sq.target:after{content:"";width:22%;height:22%;border-radius:50%;position:absolute;background:#2d754c9a}.sq.hint{outline:4px solid #e8c66b;outline-offset:-4px}.sq .piece{position:relative;z-index:1}.sq .coord{position:absolute;left:3px;bottom:2px;font-weight:800;font-size:9px;text-shadow:none;color:#36573f}.sq.dark .coord{color:#ecf2de}
+.feedback{border-radius:10px;padding:10px;margin:8px 0;background:#254033;border:1px solid #66896d}.feedback[data-tone=wrong]{background:#482e31;border-color:#c07870}.feedback[data-tone=hint]{background:#453d29;border-color:#c4a96c}.feedback[data-tone=blue]{background:#243b47;border-color:#5d899a}.feedback span{font-size:9px;letter-spacing:.07em;color:#c8ed8b;font-weight:900}.feedback strong{display:block;margin:3px 0;font-size:13px}.feedback p{margin:3px 0;font-size:11px;line-height:1.45;color:#e7eee5}
+.choices{display:grid;gap:7px;margin:9px 0}.choices button{background:#263d40;color:#ecf2e9;border:1px solid #52726d;border-radius:9px;padding:10px;text-align:left;font-size:12px}.choices button.correct{border-color:#c8ed8b;background:#34533b}
+.slim-controls{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:8px 0}.slim-controls button,.slim-controls select{border:1px solid #536c65;border-radius:8px;padding:7px 9px;background:#273b40;color:#eff6ed;font-size:11px}.slim-controls .primary{background:#c8ed8b;color:#182d1e;border-color:#c8ed8b;font-weight:900}.slim-controls .right{margin-left:auto}.clock{font-size:13px;color:#c8ed8b;font-variant-numeric:tabular-nums;font-weight:850}.clock.over{color:#f2b37b}
+.chess-focus{margin-top:9px;padding:11px;background:#243b3a;border:1px solid #506b60;border-radius:10px;font-size:11px;line-height:1.5}.review-stat{padding:7px 0;border-bottom:1px solid #425458;font-size:11px}.review-stat strong{color:#c8ed8b}
+#labStatus{color:#a9c1bd;font-size:11px;min-height:18px}.footnote{font-size:10px;color:#a9c1bd;text-align:center;margin-top:12px}.mini-message{display:none}
+@media(max-width:1100px) and (min-width:721px){.lab-layout{grid-template-columns:minmax(320px,410px) minmax(275px,385px)}.lab-library{grid-column:1/-1}.lab-list{display:flex;overflow-x:auto;max-height:none}.lab-list button{flex:0 0 175px}}
+@media(max-width:720px){.lab-layout{display:flex;flex-direction:column;gap:9px}.lab-layout>div,.lab-layout>section{width:100%}.lab-list{display:flex;overflow-x:auto;max-height:none;gap:4px}.lab-list button{flex:0 0 155px}.dashboard{grid-template-columns:repeat(2,1fr)}.dash-item strong{font-size:20px}.board{max-width:390px;margin:auto}.sq{font-size:clamp(26px,8vw,42px)}.tabs button{font-size:11px;padding:7px 8px}.mini-message{display:block;background:#254033;border:1px solid #688b70;border-radius:9px;margin-bottom:7px;padding:7px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<div class="shell">
+<header class="header"><a href="./index.html" class="brand"><span class="mark">♞</span>Opening<b>Lab</b> <span class="twelvy">by Twelvy</span></a><nav class="header-right"><a href="./opening-academy.html">Opening Academy</a><a href="./coach-v5-1.html">Stockfish Coach</a><a href="./my-chess-reset.html">Chess Reset</a></nav></header>
+<div class="hero"><div><div class="eyebrow">PHASE 8 · TRAINING CENTER</div><h1>Train the skill behind the move.</h1><p>Tactics on the board · middlegame plans · personalized review</p></div><div class="hero-stat">1400 → <strong>1800</strong></div></div>
+<section class="dashboard">
+ <div class="dash-item"><span>Exercises practiced</span><strong id="dDone">0/23</strong></div>
+ <div class="dash-item"><span>Clean solve rate</span><strong id="dRate">—</strong></div>
+ <div class="dash-item"><span>Due for review</span><strong id="dDue">0</strong></div>
+ <div class="dash-item"><span>Average tactic time</span><strong id="dTime">—</strong></div>
+</section>
+<div class="tabs"><button data-tab="tactics" class="active">⚡ Tactics</button><button data-tab="strategy">♜ Middlegame</button><button data-tab="review">◎ My Weak Spots</button></div>
+<div class="lab-layout">
+<section class="card lab-library"><div class="eyebrow" id="listHeading">TACTICAL EXERCISES</div><div class="slim-controls"><select id="filter" aria-label="Choose tactical theme"><option value="all">All themes</option></select><span id="listCount">15</span></div><div class="lab-list" id="list" aria-label="Choose a training exercise"></div></section>
+<section><div class="board-title"><div><div class="eyebrow" id="themeLabel">TACTICS</div><h2 id="title">Knight fork</h2><p id="subtitle">Choose the move that wins material</p></div><span id="side" class="side-tag">WHITE</span></div><div id="mini" class="mini-message">Find the best move.</div><div id="board" class="board" role="grid" aria-label="Interactive tactical board"></div>
+<div class="slim-controls"><button id="flip">⇵ Flip</button><button id="retry">↻ Retry</button><label for="timeGoal" class="muted">Time goal:</label><select id="timeGoal"><option value="0">Untimed</option><option value="30">30s</option><option value="60">60s</option><option value="90">90s</option></select><span class="right clock" id="clock">0:00</span></div><div class="muted" id="moveLog">Your move appears here.</div>
+<div class="muted" id="labStatus">A soft time goal encourages good calculation. There is no automatic failure when time runs out.</div></section>
+<section class="card">
+<div class="eyebrow" id="unitType">TACTICAL TRAINING</div><h3 id="questionTitle" style="font-size:17px;margin:6px 0">Find the tactic</h3><div class="coach-response" id="question">Find a forcing move.</div>
+<div id="choices" class="choices" hidden></div>
+<div class="feedback" id="answerCard" data-tone="neutral"><span>YOUR ANSWER</span><strong id="answerHeading">Your turn</strong><p id="answerText">Tap a piece and then a legal square.</p></div>
+<div class="feedback" id="coachCard" data-tone="blue"><span>COACH EXPLANATION</span><strong id="coachHeading">What matters</strong><p id="coachText">Your explanation stays visible after you move.</p></div>
+<div class="slim-controls"><button id="hint">💡 Hint</button><button id="next" class="primary">Next exercise →</button></div>
+<div class="chess-focus"><div class="eyebrow">YOUR PERSONAL TRAINING</div><p id="personal" style="margin:7px 0">Reviewing your weak spots…</p><div id="weaknesses"></div></div>
+<div class="slim-controls"><button id="dueButton">Review due drills</button><button id="clearButton">Reset training results</button></div><div class="muted">Progress is saved on this device, separately from your Chess Reset and Academy.</div>
+</section></div>
+<p class="footnote">OpeningLab Training Center v8.0 · by Twelvy · Handcrafted educational tactics, not puzzles extracted from Twelvy0's games. Strategy answers teach plans, not exact engine verdicts. Your puzzle weaknesses are learned from attempts made here. Chess.com history informs only broader training habits. For completed-game analysis, use the Stockfish Coach; never use outside help during rated play. Free; uses open-source chess.js (BSD-2-Clause).</p></div><script src="./training-data-v8.js"></script><script type="module">
+import {Chess} from 'https://cdn.jsdelivr.net/npm/chess.js@1.4.0/+esm';
+const $=x=>document.getElementById(x),data=window.OPENINGLAB_TRAINING||{},tactics=data.tactics||[],strategy=data.strategy||[];
+const KEY='openinglab.training.v8.results',TKEY='openinglab.training.v8.timeGoal';
+let progress={};try{progress=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(_){}
+let mode='tactics',filter='all',selected=null,game=null,flip=false,pieceFrom=null,finished=false,misses=0,hinted=false,showHint=false,startTime=Date.now(),finalTime=0,clockTimer=null,answer=['Your turn','Tap a piece and then a legal destination.','neutral'],coach=['What matters','Your explanation stays visible after you move.'];
+const all=()=>[...tactics,...strategy],due=t=>progress[t.id]&&progress[t.id].next<=Date.now();
+const seconds=()=>Math.floor((Date.now()-startTime)/1000),formatTime=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
+const store=()=>{try{localStorage.setItem(KEY,JSON.stringify(progress));}catch(_){}};
+const goal=()=>Number($('timeGoal').value)||0;
+function stats(){
+ const records=Object.values(progress),attempts=records.reduce((a,r)=>a+r.attempts,0),clean=records.reduce((a,r)=>a+r.clean,0);
+ $('dDone').textContent=all().filter(t=>progress[t.id]).length+'/'+all().length;
+ $('dRate').textContent=attempts?Math.round(clean/attempts*100)+'%':'—';
+ $('dDue').textContent=all().filter(due).length;
+ const tactical=tactics.map(t=>progress[t.id]).filter(Boolean),tcount=tactical.reduce((a,r)=>a+r.attempts,0);
+ $('dTime').textContent=tcount?Math.round(tactical.reduce((a,r)=>a+r.totalSec,0)/tcount)+'s':'—';
+}
+function timing(){
+ const elapsed=finished?finalTime:seconds(),g=goal();$('clock').textContent=formatTime(elapsed);
+ $('clock').classList.toggle('over',!!g&&elapsed>g);
+}
+function record(){
+ const r=progress[selected.id]||{attempts:0,clean:0,misses:0,hints:0,totalSec:0,streak:0};
+ const duration=finalTime,g=goal(),clean=misses===0&&!hinted&&(!g||duration<=g);
+ r.attempts++;r.clean+=clean?1:0;r.misses+=misses;r.hints+=hinted?1:0;r.totalSec+=duration;
+ r.streak=clean?r.streak+1:0;r.last=Date.now();
+ r.next=r.last+(clean?[1,3,7,14,30][Math.min(r.streak-1,4)]*86400000:5*60000);
+ progress[selected.id]=r;store();return clean;
+}
+function drawBoard(){
+ if(!game)return;const node=$('board');node.replaceChildren();
+ const files=flip?'hgfedcba':'abcdefgh',ranks=flip?[1,2,3,4,5,6,7,8]:[8,7,6,5,4,3,2,1];
+ const last=game.history({verbose:true}).at(-1),legal=pieceFrom?game.moves({square:pieceFrom,verbose:true}):[];
+ const icon={wp:'♙',wn:'♘',wb:'♗',wr:'♖',wq:'♕',wk:'♔',bp:'♟',bn:'♞',bb:'♝',br:'♜',bq:'♛',bk:'♚'};
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+  const sq=files[c]+ranks[r],p=game.get(sq),b=document.createElement('button');
+  b.type='button';b.className='sq '+((r+c)%2?'dark':'light');b.setAttribute('role','gridcell');
+  b.setAttribute('aria-label',sq+(p?' '+p.color+' '+p.type:' empty'));
+  if(sq===pieceFrom)b.classList.add('selected');
+  if(legal.some(m=>m.to===sq))b.classList.add('target');
+  if(last&&(sq===last.from||sq===last.to))b.classList.add('last');
+  if(showHint&&selected&&selected.uci&&(sq===selected.uci.slice(0,2)||sq===selected.uci.slice(2,4)))b.classList.add('hint');
+  if(p){const span=document.createElement('span');span.className='piece';span.textContent=icon[p.color+p.type];b.append(span);}
+  if(c===0||r===7){const label=document.createElement('span');label.className='coord';label.textContent=(c===0?ranks[r]:'')+(r===7?files[c]:'');b.append(label);}
+  b.onclick=()=>tap(sq);node.append(b);
+ }
+}
+function painted(){
+ $('answerHeading').textContent=answer[0];$('answerText').textContent=answer[1];$('answerCard').dataset.tone=answer[2];
+ $('coachHeading').textContent=coach[0];$('coachText').textContent=coach[1];
+ $('mini').textContent=answer[0]+': '+answer[1].slice(0,95);
+}
+function lessonList(){
+ const node=$('list');node.replaceChildren();
+ let set=mode==='tactics'?tactics.filter(t=>filter==='all'||t.theme===filter):mode==='strategy'?strategy:all().filter(due);
+ if(mode==='review')set=[...set].sort((a,b)=>(progress[a.id]?.next||0)-(progress[b.id]?.next||0));
+ $('listHeading').textContent=mode==='tactics'?'TACTICAL PATTERNS':mode==='strategy'?'MIDDLEGAME CONCEPTS':'SPACED REVIEW QUEUE';
+ $('filter').hidden=mode!=='tactics';$('listCount').textContent=set.length+' drills';
+ if(!set.length){const p=document.createElement('p');p.className='muted';p.textContent='No exercises due yet. Finish a drill and come back to review it.';node.append(p);}
+ for(let i=0;i<set.length;i++){
+  const t=set[i],b=document.createElement('button');b.className=selected?.id===t.id?'selected':'';
+  const title=document.createElement('strong');title.textContent=(i+1)+'. '+t.title;
+  const sub=document.createElement('small');sub.textContent=t.theme+(progress[t.id]?(due(t)?' · due':' · practiced'):'');
+  b.append(title,sub);b.onclick=()=>load(t);node.append(b);
+ }
+}
+function personalised(){
+ const cache=(()=>{try{return JSON.parse(localStorage.getItem('openinglab.reset.v7.cache')||'null');}catch(_){return null;}})();
+ let statement='Your tactical themes are learned from the moves you actually attempt here—not guessed from your Chess.com results.';
+ if(cache?.games?.length){
+  const losses=cache.games.filter(g=>g.klass==='blitz'&&g.outcome==='loss');
+  if(losses.length)statement='Chess Reset data: '+Math.round(100*losses.filter(g=>g.timeLoss).length/losses.length)+'% of '+losses.length+' blitz losses were on time. Try the 60-second calculation goal, then apply these habits in reviewed 15+10 rapid games.';
+ }
+ const themes={};
+ for(const t of tactics){const h=progress[t.id];if(!h)continue;themes[t.theme]=(themes[t.theme]||0)+h.misses;}
+ const sorted=Object.entries(themes).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);if(sorted.length)statement+=' Your most-missed pattern here: '+sorted[0][0]+' ('+sorted[0][1]+' mistakes).';
+ $('personal').textContent=statement;
+ const root=$('weaknesses');root.replaceChildren();
+ if(mode==='review'){
+  for(const [theme,n] of sorted.slice(0,4)){const row=document.createElement('div');row.className='review-stat';row.textContent=theme+': '+n+' missed attempts';root.append(row);}
+  if(!sorted.length){const p=document.createElement('p');p.className='muted';p.textContent='No missed patterns recorded yet. Solve a few exercises, then this page will adapt.';root.append(p);}
+ }
+}
+function render(){
+ if(!selected)return;
+ stats();lessonList();painted();drawBoard();personalised();timing();
+ $('themeLabel').textContent=(selected.type==='tactics'?'TACTICS':'MIDDLEGAME')+' · '+selected.theme.toUpperCase();
+ $('title').textContent=selected.title;
+ $('subtitle').textContent=selected.type==='tactics'?'Find the tactical move on the board':selected.family;
+ $('side').textContent=(game.turn()==='w'?'WHITE':'BLACK')+' TO MOVE';
+ $('unitType').textContent=selected.type==='tactics'?'PLAY THE TACTIC':'CHOOSE A STRATEGIC PLAN';
+ $('questionTitle').textContent=selected.type==='tactics'?'Find the forcing move':'Choose the best plan';
+ $('question').textContent=selected.question;$('hint').disabled=finished;
+ $('next').textContent=finished?'Next drill →':'Skip to next →';
+ $('moveLog').textContent=selected.type==='strategy'?'Opening position: '+selected.moves:game.history().join(' ')||'Your moves will appear here.';
+ const opts=$('choices');opts.replaceChildren();opts.hidden=selected.type!=='strategy';
+ if(selected.type==='strategy')selected.options.forEach((opt,i)=>{const b=document.createElement('button');b.textContent=String.fromCharCode(65+i)+'. '+opt;
+  b.disabled=finished;if(finished&&i===selected.answer)b.className='correct';b.onclick=()=>choose(i);opts.append(b);});
+}
+function finish(title,body,explanation){
+ if(finished)return;finished=true;finalTime=seconds();const clean=record();
+ answer=[title,body+(goal()&&finalTime>goal()?' You went over your time target, but the solution still counts.':''),clean?'good':'hint'];
+ coach=['Why it works',explanation];
+ render();
+}
+function choose(i){
+ if(finished||selected.type!=='strategy')return;
+ if(i!==selected.answer){misses++;answer=['↻ Not the best plan','Find the central pawn breaks, the pieces that need improvement, and immediate threats. Try again.','wrong'];painted();return;}
+ finish('✓ Good strategic plan','You identified the key concept for this position.',selected.why);
+}
+function tap(sq){
+ if(finished||selected.type!=='tactics')return;
+ const p=game.get(sq);
+ if(pieceFrom===sq){pieceFrom=null;drawBoard();return;}
+ if(pieceFrom){
+  const legal=game.moves({square:pieceFrom,verbose:true}).find(x=>x.to===sq&&(!x.promotion||x.promotion==='q'));
+  if(legal){
+   const uci=pieceFrom+sq+(legal.promotion||'');
+   if(uci!==selected.uci){misses++;answer=['↻ '+legal.san+' — not the target tactic','That move is legal, but the drill teaches a different forcing idea. Scan checks, captures, then threats.','wrong'];pieceFrom=null;painted();drawBoard();return;}
+   const move=game.move({from:pieceFrom,to:sq,promotion:legal.promotion||'q'});pieceFrom=null;
+   finish('✓ '+move.san+' — found it!','Correct tactical idea. You made the move on the board.',selected.why);return;
+  }
+ }
+ pieceFrom=p?.color===game.turn()?sq:null;drawBoard();
+}
+function giveHint(){
+ if(finished)return;hinted=true;
+ if(selected.type==='tactics'){showHint=true;answer=['💡 Hint: '+selected.uci.slice(0,2)+' → '+selected.uci.slice(2,4),selected.hint,'hint'];drawBoard();}
+ else answer=['💡 Strategic hint',selected.tip,'hint'];
+ painted();
+}
+function load(task){
+ if(!task)return;
+ clearInterval(clockTimer);selected=task;finished=false;misses=0;hinted=false;showHint=false;pieceFrom=null;startTime=Date.now();finalTime=0;
+ try{
+  game=task.type==='tactics'?new Chess(task.fen):new Chess();
+  if(task.type==='strategy')for(const san of task.moves.split(' '))game.move(san);
+ }catch(e){$('labStatus').textContent='Cannot load this lesson: '+e.message;return;}
+ flip=task.type==='tactics'&&game.turn()==='b';
+ answer=[task.type==='tactics'?'Your move':'Choose a plan',task.type==='tactics'?'Tap a piece and a destination square.':'Use the concrete position to choose the best strategic idea.','neutral'];
+ coach=['The reasoning','Solve the exercise to reveal a detailed explanation.'];clockTimer=setInterval(timing,1000);render();
+}
+function next(){
+ let set=mode==='strategy'?strategy:mode==='review'?all().filter(due):tactics.filter(x=>filter==='all'||x.theme===filter);
+ if(!set.length){switchTab('tactics');return;}
+ set=set.filter(x=>x.id!==selected?.id);if(!set.length)set=[selected];
+ set.sort((a,b)=>{const pri=t=>{const r=progress[t.id];return !r?3:(due(t)?6:0)+2*r.misses-r.clean;};return pri(b)-pri(a);});
+ load(set[0]);
+}
+function switchTab(nextTab){
+ mode=nextTab;document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===mode);b.setAttribute('aria-pressed',b.dataset.tab===mode?'true':'false');});
+ load(mode==='strategy'?strategy[0]:mode==='review'?all().find(due)||tactics[0]:tactics[0]);
+}
+function validate(){
+ const errors=[];
+ for(const t of tactics){t.type='tactics';try{const b=new Chess(t.fen),from=t.uci.slice(0,2),to=t.uci.slice(2,4),promotion=t.uci[4]||'q';const m=b.moves({square:from,verbose:true});if(!m.some(x=>x.to===to&&(!x.promotion||x.promotion===promotion)))throw Error('illegal solution');b.move({from,to,promotion});}catch(e){errors.push(t.id+': '+e.message);}}
+ for(const t of strategy){t.type='strategy';try{const b=new Chess();for(const san of t.moves.split(' '))b.move(san);if(b.turn()!==t.turn)throw Error('side to move mismatch');if(!t.options[t.answer])throw Error('no answer');}catch(e){errors.push(t.id+': '+e.message);}}
+ return errors;
+}
+$('filter').onchange=e=>{filter=e.target.value;load(tactics.find(x=>filter==='all'||x.theme===filter));};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+$('flip').onclick=()=>{flip=!flip;drawBoard();};$('retry').onclick=()=>load(selected);
+$('hint').onclick=giveHint;$('next').onclick=next;$('dueButton').onclick=()=>switchTab('review');
+$('clearButton').onclick=()=>{if(confirm('Clear Training Center exercise history? This will NOT clear your Chess.com dashboard or Opening Academy.')){progress={};store();render();}};
+$('timeGoal').value=localStorage.getItem(TKEY)||'0';$('timeGoal').onchange=e=>{try{localStorage.setItem(TKEY,e.target.value);}catch(_){}timing();};
+for(const theme of [...new Set(tactics.map(t=>t.theme))].sort()){const o=document.createElement('option');o.value=theme;o.textContent=theme;$('filter').append(o);}
+const broken=validate();
+if(broken.length){$('labStatus').textContent='Some lessons failed validation: '+broken.join('; ');console.error('OpeningLab lesson check:',broken);const badIds=new Set(broken.map(x=>x.split(':')[0]));for(const a of [tactics,strategy])for(let i=a.length-1;i>=0;i--)if(badIds.has(a[i].id))a.splice(i,1);}
+if(tactics.length&&strategy.length)switchTab('tactics');else $('question').textContent='Training lessons could not load; check your connection.';
+</script></body></html>
