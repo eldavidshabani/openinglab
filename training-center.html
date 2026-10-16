@@ -190,8 +190,16 @@ function giveHint(){
  else answer=['💡 Strategic hint',selected.tip,'hint'];
  painted();
 }
+function recordUnfinished(){
+ if(!selected||finished||(!misses&&!hinted))return;
+ const r=progress[selected.id]||{attempts:0,clean:0,misses:0,hints:0,totalSec:0,streak:0};
+ r.attempts++;r.misses+=misses;r.hints+=hinted?1:0;r.totalSec+=seconds();
+ r.streak=0;r.last=Date.now();r.next=r.last+5*60000;
+ progress[selected.id]=r;store();
+}
 function load(task){
  if(!task)return;
+ recordUnfinished();
  clearInterval(clockTimer);selected=task;finished=false;misses=0;hinted=false;showHint=false;pieceFrom=null;startTime=Date.now();finalTime=0;
  try{
   game=task.type==='tactics'?new Chess(task.fen):new Chess();
