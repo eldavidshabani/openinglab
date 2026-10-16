@@ -27,5 +27,7 @@ const S=[
 {id:"s07",family:"Caro-Kann Defense",theme:"Pawn chains",moves:"e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2 c5 O-O Nc6",turn:"w",title:"Caro-Kann: understand ...c5",question:"Why does Black commonly play ...c5 in the Advance Caro-Kann?",options:["To trap their own pieces","To attack the base of White's pawn chain at d4","To give White a free passed pawn immediately"],answer:1,why:"The ...c5 break challenges d4, the base supporting White's advanced e5 pawn. It prevents White from enjoying uncontested central space.",tip:"A pawn break usually needs pieces ready to use the files it opens."},
 {id:"s08",family:"Sicilian Defense",theme:"Threat recognition",moves:"e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Be3 e5",turn:"w",title:"Najdorf: respond to a tempo",question:"Black just played ...e5. What should White recognize before making a long-term plan?",options:["The d4-knight is attacked and needs a calculated response","The a1-rook must always be traded now","There are no threats because Black moved a pawn"],answer:0,why:"...e5 attacks White's knight on d4 while gaining space. Middlegame plans matter only after you address the opponent's immediate threats.",tip:"Ask checks → captures → threats on both sides before making a plan."}
 ];
+T.forEach(t=>{t.type='tactics';});
+S.forEach(s=>{s.type='strategy';});
 window.OPENINGLAB_TRAINING={tactics:T,strategy:S,version:"8.0.0"};
 })();
