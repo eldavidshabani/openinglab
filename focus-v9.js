@@ -42,15 +42,75 @@
   observer.observe(watched,{subtree:true,characterData:true,childList:true});
  }
  function attachPieceMotion(){
-  const board=$('board');if(!board||prefersReduce)return;
-  let prev='';
+  const board=$('board');if(!board||prefersReduce||!Element.prototype.animate)return;
+  let snapshot=null,activeAnimation=null;
+  function read(){
+   const positions=new Map();
+   for(const square of board.querySelectorAll('[aria-label]')){
+    const name=(square.getAttribute('aria-label')||'').slice(0,2);
+    if(!/^[a-h][1-8]$/.test(name))continue;
+    const piece=square.querySelector('.piece');
+    positions.set(name,{square,piece:piece?.textContent||'',rect:square.getBoundingClientRect()});
+   }
+   return positions;
+  }
+  function slide(from,to){
+   if(!from?.rect||!to?.rect||!to?.square||!to.piece)return;
+   const dest=to.square.querySelector('.piece');if(!dest)return;
+   const sourceRect=from.rect,targetRect=to.rect;
+   if(!sourceRect.width||!targetRect.width)return;
+   if(activeAnimation){activeAnimation.cancel();activeAnimation=null;}
+   const ghost=document.createElement('span');
+   ghost.textContent=to.piece;ghost.setAttribute('aria-hidden','true');
+   ghost.style.cssText='position:fixed;z-index:9999;pointer-events:none;display:grid;place-items:center;line-height:1;font-size:'+Math.round(targetRect.height*.75)+'px;width:'+targetRect.width+'px;height:'+targetRect.height+'px;left:'+sourceRect.left+'px;top:'+sourceRect.top+'px;text-shadow:0 2px 2px #0008;';
+   document.body.append(ghost);dest.style.visibility='hidden';
+   const deltaX=targetRect.left-sourceRect.left,deltaY=targetRect.top-sourceRect.top;
+   const anim=ghost.animate([{transform:'translate(0,0) scale(1)'},{transform:'translate('+deltaX+'px,'+deltaY+'px) scale(1)'}],{duration:300,easing:'cubic-bezier(.2,.76,.22,1)',fill:'forwards'});
+   activeAnimation=anim;
+   const cleanup=()=>{dest.style.visibility='';ghost.remove();if(activeAnimation===anim)activeAnimation=null;};
+   anim.onfinish=cleanup;anim.oncancel=cleanup;
+  }
   const obs=new MutationObserver(()=>{
-   const target=board.querySelector('.sq.last .piece, .sq.move .piece, .square.move .piece, .square.last .piece');
-   const last=target?.closest('[aria-label]')?.getAttribute('aria-label')||'';
-   if(!last||last===prev)return;prev=last;
-   target.classList.remove('ol-move-piece');void target.offsetWidth;target.classList.add('ol-move-piece');
+   const next=read();
+   if(snapshot){
+    const arrivals=[...next].filter(([sq,v])=>v.piece&&snapshot.get(sq)?.piece!==v.piece);
+    const departed=[...snapshot].filter(([sq,v])=>v.piece&&next.get(sq)?.piece!==v.piece);
+    const candidates=[];
+    for(const [sq,to] of arrivals){
+     for(const [fromSq,from] of departed){
+      if(from.piece===to.piece&&sq!==fromSq){
+       // Prefer the destination marked as the just-completed move.
+       const marked=to.square.classList.contains('last')||to.square.classList.contains('move');
+       candidates.push({from,to,marked});
+      }
+     }
+    }
+    candidates.sort((a,b)=>Number(b.marked)-Number(a.marked));
+    if(candidates.length&&candidates[0].marked)slide(candidates[0].from,candidates[0].to);
+   }
+   snapshot=next;
   });
+  snapshot=read();
   obs.observe(board,{childList:true});
+ }
+ function mobileNav(){
+  if(document.querySelector('.ol-bottom-nav'))return;
+  const destinations=[
+   ['./index.html','⌂','Home','home'],
+   ['./training-center.html','⚡','Train','training'],
+   ['./opening-academy.html','♗','Learn','academy'],
+   ['./coach-v5-1.html','♚','Play','coach'],
+   ['./my-chess-reset.html','▥','Stats','reset']
+  ];
+  const nav=document.createElement('nav');nav.className='ol-bottom-nav';nav.setAttribute('aria-label','OpeningLab navigation');
+  for(const [href,icon,label,key] of destinations){
+   const a=document.createElement('a');a.href=href;
+   if(document.body.dataset.olPage===key){a.className='current';a.setAttribute('aria-current','page');}
+   const glyph=document.createElement('span');glyph.className='ol-nav-icon';glyph.textContent=icon;
+   const caption=document.createElement('span');caption.textContent=label;
+   a.append(glyph,caption);nav.append(a);
+  }
+  document.body.append(nav);
  }
  function enhanceAcademy(){
   const right=document.querySelector('.right-panel'),card=right?.querySelector('.card:first-child');
@@ -109,6 +169,7 @@
   const p=document.body.dataset.olPage;
   if(!['academy','training','coach'].includes(p))return;
   document.body.classList.add('ol-focus');
+  mobileNav();
   if(p==='academy')enhanceAcademy();
   if(p==='training')enhanceTraining();
   if(p==='coach')enhanceCoach();
