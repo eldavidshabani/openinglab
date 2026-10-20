@@ -237,5 +237,5 @@ $('timeGoal').value=localStorage.getItem(TKEY)||'0';$('timeGoal').onchange=e=>{t
 for(const theme of [...new Set(tactics.map(t=>t.theme))].sort()){const o=document.createElement('option');o.value=theme;o.textContent=theme;$('filter').append(o);}
 const broken=validate();
 if(broken.length){$('labStatus').textContent='Some lessons failed validation: '+broken.join('; ');console.error('OpeningLab lesson check:',broken);const badIds=new Set(broken.map(x=>x.split(':')[0]));for(const a of [tactics,strategy])for(let i=a.length-1;i>=0;i--)if(badIds.has(a[i].id))a.splice(i,1);}
-if(tactics.length&&strategy.length)switchTab('tactics');else $('question').textContent='Training lessons could not load; check your connection.';
+if(tactics.length&&strategy.length){const tab=new URLSearchParams(location.search).get('tab');switchTab(['strategy','review','tactics'].includes(tab)?tab:'tactics');}else $('question').textContent='Training lessons could not load; check your connection.';
 </script></body></html>
