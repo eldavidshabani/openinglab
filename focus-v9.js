@@ -112,7 +112,29 @@
   }
   document.body.append(nav);
  }
+ function compactPicker(container,label,boardSelector){
+  if(!container||container.querySelector('.ol-course-picker'))return;
+  const nodes=[...container.children];
+  const details=document.createElement('details');details.className='ol-course-picker';
+  const summary=document.createElement('summary');summary.textContent=label;
+  const content=document.createElement('div');content.className='ol-picker-body';
+  nodes.forEach(node=>content.append(node));
+  details.append(summary,content);container.append(details);
+  const phone=window.matchMedia('(max-width:760px)');
+  details.open=!phone.matches;
+  content.addEventListener('click',e=>{
+   if(!phone.matches)return;
+   const button=e.target.closest('button.lesson, .lab-list button, #list button');
+   if(!button)return;
+   details.open=false;
+   const anchor=document.querySelector(boardSelector);
+   window.requestAnimationFrame(()=>{
+    if(anchor)anchor.scrollIntoView({behavior:prefersReduce?'instant':'smooth',block:'start'});
+   });
+  });
+ }
  function enhanceAcademy(){
+  compactPicker(document.querySelector('aside.catalog'),'♗ Choose opening  ·  tap to browse','.board-title');
   const right=document.querySelector('.right-panel'),card=right?.querySelector('.card:first-child');
   if(!card)return;
   const nodes=[$('taskInfo'),$('yourCard'),$('oppCard'),$('wrongCard')].filter(Boolean);
@@ -128,6 +150,7 @@
   attachToast('yourTitle');attachPieceMotion();
  }
  function enhanceTraining(){
+  compactPicker(document.querySelector('.lab-library'),'⚡ Choose challenge  ·  tap to browse','.board-title');
   const answer=$('answerCard'),explain=$('coachCard');
   const right=answer?.closest('section.card');
   if(!right)return;
