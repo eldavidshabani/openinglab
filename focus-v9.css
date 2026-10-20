@@ -145,3 +145,29 @@ body.ol-focus[data-ol-page=coach] .ol-insight-body .ai-row{display:flex}
 }
 @media(max-width:400px){body.ol-focus .ol-insights>summary{font-size:12px}body.ol-focus :is(.toolbar button,.board-buttons button){font-size:11px!important}}
 @media(prefers-reduced-motion:reduce){body.ol-focus *,body.ol-focus *::before,body.ol-focus *::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+
+/* Mobile app navigation, shared across the learning and play screens. */
+.ol-bottom-nav{display:none}
+@media(max-width:760px){
+ body.ol-focus{padding-bottom:76px!important}
+ body.ol-focus .ol-bottom-nav{display:flex;position:fixed;z-index:100;bottom:0;left:0;right:0;
+  justify-content:space-around;align-items:center;gap:3px;background:#192a2cf2;
+  border-top:1px solid #516d60;padding:10px 7px max(9px,env(safe-area-inset-bottom));backdrop-filter:blur(16px)}
+ body.ol-focus .ol-bottom-nav a{flex:1;text-align:center;display:grid;gap:2px;
+  font-size:10px;font-weight:850;color:#b4cbbb;text-decoration:none;line-height:1.12;padding:1px}
+ body.ol-focus .ol-bottom-nav a.current{color:#c8ed8b}
+ body.ol-focus .ol-bottom-nav .ol-nav-icon{font-size:21px;line-height:1.2}
+ body.ol-focus[data-ol-page=academy] .header-right,
+ body.ol-focus[data-ol-page=training] .header-right{display:none!important}
+ body.ol-focus[data-ol-page=coach] .heading>div:last-child{display:none!important}
+ body.ol-focus[data-ol-page=academy] .info-foot,
+ body.ol-focus[data-ol-page=training] .footnote,
+ body.ol-focus[data-ol-page=coach] .note{font-size:10px!important;opacity:.7}
+}
+body.ol-focus[data-ol-page=coach] .optional-info[open] .ai-row{display:flex}
+body.ol-focus[data-ol-page=academy] .mini-feedback{display:flex!important}
+body.ol-focus[data-ol-page=training] #mini{display:block!important}
+@media(hover:hover){
+ body.ol-focus :is(.primary,.tabs button,.mode-bar button,.toolbar button,.board-buttons button):hover:not(:disabled){
+  transform:translateY(-2px);box-shadow:0 7px 15px #0003}
+}
