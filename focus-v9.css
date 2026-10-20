@@ -171,3 +171,17 @@ body.ol-focus[data-ol-page=training] #mini{display:block!important}
  body.ol-focus :is(.primary,.tabs button,.mode-bar button,.toolbar button,.board-buttons button):hover:not(:disabled){
   transform:translateY(-2px);box-shadow:0 7px 15px #0003}
 }
+
+/* Collapsible libraries: on mobile, the board comes before the lesson catalog. */
+body.ol-focus .ol-course-picker>summary{cursor:pointer;display:block;font-weight:900;font-size:13px;padding:7px 8px;
+ list-style:none;color:#e4f4d8}
+body.ol-focus .ol-course-picker>summary::-webkit-details-marker{display:none}
+body.ol-focus .ol-course-picker>summary::after{content:'⌄';float:right;color:#c4e9a2;font-size:19px;line-height:1}
+body.ol-focus .ol-course-picker[open]>summary::after{content:'⌃'}
+body.ol-focus .ol-picker-body{padding-top:6px;animation:ol-fade-rise .24s var(--ol-ease)}
+@media(max-width:760px){
+ body.ol-focus :is(.catalog,.lab-library){padding:7px 10px!important;min-height:0!important}
+ body.ol-focus .ol-course-picker>summary{padding:10px 7px;min-height:40px}
+ body.ol-focus .ol-course-picker:not([open]){max-height:55px}
+ body.ol-focus .board-title{scroll-margin-top:15px}
+}
