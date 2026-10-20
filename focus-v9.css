@@ -1,0 +1,147 @@
+/* OpeningLab Focus UI v9: gameplay first, readable, reduced clutter.
+   Applies only to Academy, Training Center and Stockfish Coach. */
+:root{--ol-focus:#c8ed8b;--ol-night:#101d21;--ol-ease:cubic-bezier(.18,.8,.25,1)}
+body.ol-focus{font-size:15px!important;line-height:1.5!important;background:#101e23;
+ background-image:radial-gradient(ellipse 85% 48% at 100% 2%,rgba(93,170,122,.10),transparent 75%)}
+body.ol-focus .shell,body.ol-focus .container{max-width:1160px}
+body.ol-focus :is(.header,header){border-bottom-color:#385451}
+body.ol-focus :is(.hero,.heading){margin:10px 0!important;gap:10px}
+body.ol-focus :is(.hero h1,.heading h1){font-size:clamp(20px,2.1vw,27px)!important;line-height:1.15!important;margin:2px 0}
+body.ol-focus :is(.hero p,.heading p){font-size:12px!important;margin:0;color:#a6c1b8}
+body.ol-focus :is(.card,.progress-wrap){border-color:#3c5953;border-radius:15px;background:#1b2c31;box-shadow:0 5px 22px rgba(0,0,0,.09)}
+body.ol-focus :is(button,.primary){touch-action:manipulation;transition:transform .19s var(--ol-ease),box-shadow .19s,border-color .19s,background .19s}
+body.ol-focus :is(.primary,.action-row .primary){background:#bde58a!important;color:#1c3321!important;font-weight:900!important}
+body.ol-focus :is(.action-row button,.toolbar button,.slim-controls button,.board-buttons button,.quick-prompts button,
+ .mode-bar button,.tabs button,.coach-buttons button){font-size:13px!important;min-height:42px}
+body.ol-focus .eyebrow{font-size:10px!important;letter-spacing:.07em}
+body.ol-focus :is(.board,.board-with-eval){filter:drop-shadow(0 13px 28px rgba(0,0,0,.26));border-radius:12px}
+body.ol-focus .board :is(.piece,.sq .piece,.square .piece){transition:transform .2s ease}
+body.ol-focus .ol-move-piece{animation:ol-drop .36s var(--ol-ease) both}
+@keyframes ol-drop{0%{transform:translateY(-15%) scale(.78);filter:brightness(1.7)}70%{transform:translateY(1%) scale(1.12)}100%{transform:translateY(0) scale(1);filter:brightness(1)}}
+body.ol-focus :is(.square,.sq){cursor:pointer}
+body.ol-focus .ol-mini-callout{display:flex;align-items:center;gap:9px;background:#283f35;
+ border:1px solid #62825e;border-radius:12px;padding:10px 13px;font-size:14px;font-weight:750;
+ color:#e9f8dc;margin:8px 0;min-height:43px}
+body.ol-focus .ol-mini-callout .ol-dot{display:inline-grid;place-items:center;flex:none;
+ background:#bde58a;color:#1d3222;width:26px;height:26px;border-radius:8px;font-size:16px}
+body.ol-focus .ol-mini-callout[data-status=wrong]{background:#402e30;border-color:#a47569}
+body.ol-focus .ol-mini-callout[data-status=wrong] .ol-dot{background:#e9a494}
+body.ol-focus .ol-mini-callout[data-status=good]{background:#263e32;border-color:#a1ce78}
+body.ol-focus .ol-mini-callout[data-status=good] .ol-dot{background:#c8ed8b}
+body.ol-focus .ol-mini-callout .ol-mini-title{min-width:0;flex:1;overflow-wrap:anywhere}
+body.ol-focus .ol-insights{background:#223638;border:1px solid #45645a;border-radius:12px;margin:9px 0;overflow:hidden}
+body.ol-focus .ol-insights>summary{cursor:pointer;display:flex;align-items:center;gap:9px;
+ padding:12px 13px;font-size:13px;font-weight:900;color:#e2f5db;list-style:none}
+body.ol-focus .ol-insights>summary::-webkit-details-marker{display:none}
+body.ol-focus .ol-insights>summary .ol-more{margin-left:auto;font-size:11px;font-weight:700;color:#c5e89c}
+body.ol-focus .ol-insights>summary .ol-more::after{content:'⌄';font-size:16px;margin-left:5px}
+body.ol-focus .ol-insights[open]>summary .ol-more::after{content:'⌃'}
+body.ol-focus .ol-insights[open]>summary{background:#2c4640}
+body.ol-focus .ol-insight-body{padding:11px;display:grid;gap:7px;animation:ol-fade-rise .23s var(--ol-ease)}
+body.ol-focus .ol-insight-body :is(.story,.feedback){margin:0!important}
+body.ol-focus .ol-insight-body :is(p,.info,#taskInfo,#coachText,#answerText,#whiteText,#blackText,#yourText,#oppText,#wrongText){
+ font-size:14px!important;line-height:1.55!important}
+body.ol-focus .ol-insight-body .story strong,body.ol-focus .ol-insight-body .feedback strong{font-size:15px!important}
+body.ol-focus .ol-insight-body .story{padding:10px 11px}
+body.ol-focus .ol-insight-body .story .speaker{font-size:10px}
+body.ol-focus .ol-offscreen-help{position:absolute!important;width:1px!important;height:1px!important;
+ clip-path:inset(50%)!important;overflow:hidden!important;white-space:nowrap!important}
+@keyframes ol-fade-rise{from{opacity:.15;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ol-bloom{0%{transform:translateY(8px) scale(.83);opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translateY(-55px) scale(1.1)}}
+body.ol-focus .ol-pop{position:fixed;z-index:200;top:35%;left:50%;transform:translateX(-50%);
+ border-radius:23px;padding:10px 19px;font-size:16px;font-weight:900;background:#c8ed8b;color:#142a1d;
+ box-shadow:0 13px 33px #0009;pointer-events:none;animation:ol-bloom 1.05s ease-out both}
+body.ol-focus :is(.progress-fill,#progressBar,.meter>div,.progress-rail>div,.eval-white){transition:width .5s var(--ol-ease),height .7s var(--ol-ease)}
+body.ol-focus .ol-completion-track{height:7px;border-radius:10px;background:#304942;overflow:hidden;margin:7px 0}
+body.ol-focus .ol-completion-track>span{display:block;height:100%;background:linear-gradient(90deg,#7fb967,#c8ed8b);width:0%;transition:width .48s ease}
+body.ol-focus .ol-quick-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:7px 0}
+body.ol-focus .ol-quick-actions a{display:inline-flex;text-decoration:none;background:#294339;color:#d9edcc;
+ border:1px solid #527962;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:800}
+body.ol-focus .ol-quick-actions a:hover{background:#365445}
+body.ol-focus .ol-status-chip{font-size:11px;font-weight:800;color:#aeda91}
+/* Academy: title, board, one answer, and an optional coach drawer. */
+body.ol-focus[data-ol-page=academy] .layout{grid-template-columns:minmax(310px,560px) minmax(250px,355px)!important;max-width:950px;margin:auto;gap:15px}
+body.ol-focus[data-ol-page=academy] .catalog{grid-column:1/-1;padding:8px 10px}
+body.ol-focus[data-ol-page=academy] .catalog .eyebrow,body.ol-focus[data-ol-page=academy] .catalog-foot{display:none}
+body.ol-focus[data-ol-page=academy] .catalog .search{max-width:260px;margin:2px 0 7px;padding:9px 11px}
+body.ol-focus[data-ol-page=academy] .catalog .filters{max-width:290px;margin:1px 0 6px}
+body.ol-focus[data-ol-page=academy] .opening-list{max-height:109px;display:flex;flex-direction:row;overflow-x:auto;gap:6px;scroll-snap-type:x proximity}
+body.ol-focus[data-ol-page=academy] .family-label{display:none}
+body.ol-focus[data-ol-page=academy] .lesson{flex:0 0 170px;background:#24393b;padding:8px 7px;scroll-snap-align:start}
+body.ol-focus[data-ol-page=academy] .lesson.active{background:#36513f}
+body.ol-focus[data-ol-page=academy] .lesson-body strong{font-size:12px}
+body.ol-focus[data-ol-page=academy] .lesson-body small{font-size:10px}
+body.ol-focus[data-ol-page=academy] .board-panel{width:100%}
+body.ol-focus[data-ol-page=academy] .board-title h2{font-size:21px!important}
+body.ol-focus[data-ol-page=academy] .board-title p{display:none}
+body.ol-focus[data-ol-page=academy] .right-panel>.card:first-child{padding:12px}
+body.ol-focus[data-ol-page=academy] #taskTitle{font-size:19px!important;margin:9px 0}
+body.ol-focus[data-ol-page=academy] #taskInfo{font-size:13px!important}
+body.ol-focus[data-ol-page=academy] .right-panel>.card:nth-child(2){padding:11px}
+body.ol-focus[data-ol-page=academy] .right-panel .tabbar h3{font-size:14px}
+body.ol-focus[data-ol-page=academy] .right-panel .panel-label{display:none}
+body.ol-focus[data-ol-page=academy] .coach-response{font-size:13px!important;padding:9px}
+body.ol-focus[data-ol-page=academy] .progress-wrap{padding:9px;margin:7px 0}
+body.ol-focus[data-ol-page=academy] .progress-wrap>div:last-child{display:none}
+/* Training: hidden essay, visible puzzle and one clean response */
+body.ol-focus[data-ol-page=training] .lab-layout{grid-template-columns:minmax(310px,560px) minmax(260px,370px)!important;max-width:960px;margin:auto;gap:13px}
+body.ol-focus[data-ol-page=training] .lab-library{grid-column:1/-1;padding:9px;overflow:visible!important}
+body.ol-focus[data-ol-page=training] .lab-library>.eyebrow{display:none}
+body.ol-focus[data-ol-page=training] .lab-list{display:flex!important;overflow-x:auto!important;max-height:112px!important;gap:6px}
+body.ol-focus[data-ol-page=training] .lab-list>button{flex:0 0 180px;min-width:166px;scroll-snap-align:start}
+body.ol-focus[data-ol-page=training] .dashboard{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+body.ol-focus[data-ol-page=training] .dash-item{padding:9px 10px}
+body.ol-focus[data-ol-page=training] .dash-item span{font-size:10px}
+body.ol-focus[data-ol-page=training] .dash-item strong{font-size:19px}
+body.ol-focus[data-ol-page=training] .hero p{display:none}
+body.ol-focus[data-ol-page=training] .lab-layout .board-title h2{font-size:21px}
+body.ol-focus[data-ol-page=training] .lab-layout .board-title p{display:none}
+body.ol-focus[data-ol-page=training] #question{font-size:15px!important;font-weight:650;line-height:1.5}
+body.ol-focus[data-ol-page=training] #questionTitle{font-size:19px!important}
+body.ol-focus[data-ol-page=training] #labStatus{font-size:10px!important}
+body.ol-focus[data-ol-page=training] #choices button{font-size:14px!important;line-height:1.4;padding:12px}
+/* Coach: eval board at center, engine scores obvious, extra coach text optional */
+body.ol-focus[data-ol-page=coach] .grid{grid-template-columns:minmax(325px,580px) minmax(270px,380px)!important;max-width:990px;margin:auto;gap:13px}
+body.ol-focus[data-ol-page=coach] .heading p{display:none}
+body.ol-focus[data-ol-page=coach] .legend{display:none}
+body.ol-focus[data-ol-page=coach] .card .eyebrow{font-size:10px}
+body.ol-focus[data-ol-page=coach] .eval-readout{padding:9px 5px}
+body.ol-focus[data-ol-page=coach] #evalNumber{font-size:24px}
+body.ol-focus[data-ol-page=coach] .coach-chat{margin-top:9px}
+body.ol-focus[data-ol-page=coach] .chat-log{height:130px;min-height:105px;overflow:auto}
+body.ol-focus[data-ol-page=coach] .chat-msg p{font-size:13px!important}
+body.ol-focus[data-ol-page=coach] .optional-info{margin-top:8px}
+body.ol-focus[data-ol-page=coach] #whiteText,body.ol-focus[data-ol-page=coach] #blackText{font-size:13px!important}
+body.ol-focus[data-ol-page=coach] .ai-row{display:none}
+body.ol-focus[data-ol-page=coach] .ol-insight-body .ai-row{display:flex}
+/* Shared touch layout */
+@media(max-width:760px){
+ body.ol-focus{font-size:14px!important}
+ body.ol-focus :is(.hero,.heading){margin:6px 0 8px!important}
+ body.ol-focus .hero-stat{display:none}
+ body.ol-focus .eyebrow{font-size:9px!important}
+ body.ol-focus :is(.header,header){padding:5px 0 8px!important}
+ body.ol-focus :is(.header-right,.links){gap:4px!important}
+ body.ol-focus :is(.header-right a,.heading a){font-size:10px!important;padding:5px 7px}
+ body.ol-focus :is(.layout,.lab-layout,.grid){display:flex!important;flex-direction:column!important;gap:9px!important}
+ body.ol-focus :is(.layout>* , .lab-layout>* , .grid>* ){width:100%}
+ body.ol-focus[data-ol-page=academy] .catalog{order:0}
+ body.ol-focus[data-ol-page=academy] .board-panel{order:1}
+ body.ol-focus[data-ol-page=academy] .right-panel{order:2}
+ body.ol-focus[data-ol-page=academy] .catalog .search{max-width:none}
+ body.ol-focus[data-ol-page=academy] .opening-list{max-height:100px}
+ body.ol-focus[data-ol-page=academy] .lesson{flex-basis:162px}
+ body.ol-focus[data-ol-page=training] .lab-library{order:0}
+ body.ol-focus[data-ol-page=training] .lab-layout>section:nth-child(2){order:1}
+ body.ol-focus[data-ol-page=training] .lab-layout>section:nth-child(3){order:2}
+ body.ol-focus[data-ol-page=training] .dashboard{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+ body.ol-focus[data-ol-page=training] .lab-list{max-height:104px!important}
+ body.ol-focus[data-ol-page=coach] .grid{display:flex;flex-direction:column}
+ body.ol-focus[data-ol-page=coach] .grid>section{width:100%}
+ body.ol-focus[data-ol-page=coach] .container{padding:7px 10px 25px}
+ body.ol-focus :is(.board,.board-with-eval){max-width:470px;margin-left:auto;margin-right:auto}
+ body.ol-focus :is(.story,.feedback){padding:9px 11px}
+ body.ol-focus .ol-insight-body :is(p,.info){font-size:14px!important}
+}
+@media(max-width:400px){body.ol-focus .ol-insights>summary{font-size:12px}body.ol-focus :is(.toolbar button,.board-buttons button){font-size:11px!important}}
+@media(prefers-reduced-motion:reduce){body.ol-focus *,body.ol-focus *::before,body.ol-focus *::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
